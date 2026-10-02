@@ -103,7 +103,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   clicked in-game. Shared vehicle layout and unchanged click/follow handlers
   retained for all types; other vehicle types await final smoke checks.
 
-- [ ] **07 — Restore text Rename buttons (review 5).**
+- [x] **07 — Restore text Rename buttons (review 5).**
   Replace the small rename icons with the previous text controls and placement
   in town, station, waypoint/buoy, and depot windows. Restore vehicle renaming
   to the vehicle details window. Follow the old layouts where other retained
@@ -113,7 +113,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   plus `src/lang/english.txt`.
   Historical references: `5bfcd742b8`, `589feba0eb`.
   Suggested commit: `Change: Restore text Rename controls and their placement`
-  Completion: pending.
+  Completion: release build passed. Town buttons/dialog and train details
+  Rename checked in-game, including submitting a new vehicle name. Restored
+  depot Location alongside Rename to keep its original bottom row. Ownership
+  checks retained; remaining vehicle/depot variants await final smoke checks.
 
 - [ ] **08 — Always show all signal types; add a hide-semaphores setting (review 10–11).**
   Always expose block, entry, exit, combo, path, and one-way path signal types.
