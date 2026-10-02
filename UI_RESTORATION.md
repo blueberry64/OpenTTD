@@ -135,9 +135,13 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   `src/table/settings/gui_settings.ini`, `src/widgets/rail_widget.h`,
   `src/lang/english.txt`. References: `7469f00c5b`, `8f01ae675e`.
   Suggested commit: `Change: Show all signal types with optional semaphore hiding`
-  Completion: Release build passed. All six light-signal buttons and live\n  semaphore toggling/reopening verified in a 1939 game at 1x. Hiding removes\n  the row and resets selection to electric; old path-only config is ignored.\n  Both picker-free placement paths share the new default helper. Signal\n  simulation is unchanged; a full placement matrix was not exercised.
+  Completion: Release build passed. All six light-signal buttons and live
+  semaphore toggling/reopening verified in a 1939 game at 1x. Hiding removes
+  the row and resets selection to electric; old path-only config is ignored.
+  Both picker-free placement paths share the new default helper. Signal
+  simulation is unchanged; a full placement matrix was not exercised.
 
-- [ ] **09 — Restore the old main menu with climate pictures (review 14).**
+- [x] **09 — Restore the old main menu with climate pictures (review 14).**
   Restore the familiar text-button grid and four clickable climate pictures.
   Use the pre-redesign menu as the layout reference, while keeping current
   Options/Settings integration and other explicitly retained functionality.
@@ -147,7 +151,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Entry points: `src/intro_gui.cpp`, `src/widgets/intro_widget.h`,
   `src/lang/english.txt`. Historical reference: `d00196cd65` and its parent.
   Suggested commit: `Change: Restore the classic main menu and climate pictures`
-  Completion: pending.
+  Completion: Release build passed. Classic grid checked at 1024x768 and
+  640x480; all four climate pictures carry through to world generation.
+  Options and Load Game opened successfully. Other entries retain current
+  handlers, with direct AI, Game Script and NewGRF entries restored.
 
 - [ ] **10 — Restore station-list cargo filter buttons (review 18).**
   Replace the multi-select cargo dropdown in the company station list with

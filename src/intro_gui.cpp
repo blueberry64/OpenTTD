@@ -16,6 +16,9 @@
 #include "help_gui.h"
 #include "network/network.h"
 #include "genworld.h"
+#include "ai/ai_gui.hpp"
+#include "game/game_gui.hpp"
+#include "newgrf_config.h"
 #include "network/network_gui.h"
 #include "network/network_content.h"
 #include "network/network_survey.h"
@@ -247,6 +250,14 @@ struct SelectGameWindow : public Window {
 		this->GetWidget<NWidgetStacked>(WID_SGI_TRANSLATION_SELECTION)->SetDisplayedPlane(missing_lang ? 0 : SZSP_NONE);
 	}
 
+	void OnInvalidateData([[maybe_unused]] int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+		for (WidgetID widget = WID_SGI_TEMPERATE_LANDSCAPE; widget <= WID_SGI_TOYLAND_LANDSCAPE; ++widget) {
+			this->SetWidgetLoweredState(widget, _settings_newgame.game_creation.landscape == static_cast<LandscapeType>(widget - WID_SGI_TEMPERATE_LANDSCAPE));
+		}
+	}
+
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
@@ -311,6 +322,16 @@ struct SelectGameWindow : public Window {
 				}
 				break;
 
+			case WID_SGI_TEMPERATE_LANDSCAPE:
+			case WID_SGI_ARCTIC_LANDSCAPE:
+			case WID_SGI_TROPIC_LANDSCAPE:
+			case WID_SGI_TOYLAND_LANDSCAPE:
+				SetNewLandscapeType(static_cast<LandscapeType>(widget - WID_SGI_TEMPERATE_LANDSCAPE));
+				break;
+
+			case WID_SGI_GRF_SETTINGS:    ShowNewGRFSettings(true, true, false, _grfconfig_newgame); break;
+			case WID_SGI_AI_SETTINGS:     ShowAIConfigWindow(); break;
+			case WID_SGI_GS_SETTINGS:     ShowGSConfigWindow(); break;
 			case WID_SGI_OPTIONS:         ShowGameOptions(); break;
 			case WID_SGI_HIGHSCORE:       ShowHighscoreTable(); break;
 			case WID_SGI_HELP:            ShowHelpWindow(); break;
@@ -331,18 +352,32 @@ static constexpr std::initializer_list<NWidgetPart> _nested_select_game_widgets 
 	NWidget(WWT_PANEL, Colours::Brown),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.sparse),
 
-			/* Single player */
-			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_GENERATE_GAME), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_LANDSCAPING, STR_INTRO_NEW_GAME, STR_INTRO_TOOLTIP_NEW_GAME), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_PLAY_HEIGHTMAP), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SHOW_COUNTOURS, STR_INTRO_PLAY_HEIGHTMAP, STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_PLAY_SCENARIO), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SUBSIDIES, STR_INTRO_PLAY_SCENARIO, STR_INTRO_TOOLTIP_PLAY_SCENARIO), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_LOAD_GAME), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SAVE, STR_INTRO_LOAD_GAME, STR_INTRO_TOOLTIP_LOAD_GAME), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_HIGHSCORE), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_COMPANY_LEAGUE, STR_INTRO_HIGHSCORE, STR_INTRO_TOOLTIP_HIGHSCORE), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_sparse, 0),
+				/* 'New Game' and 'Load Game' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_GENERATE_GAME), SetStringTip(STR_INTRO_NEW_GAME, STR_INTRO_TOOLTIP_NEW_GAME), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_LOAD_GAME), SetStringTip(STR_INTRO_LOAD_GAME, STR_INTRO_TOOLTIP_LOAD_GAME), SetFill(1, 0),
+				EndContainer(),
+
+				/* 'Play Scenario' and 'Play Heightmap' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_PLAY_SCENARIO), SetStringTip(STR_INTRO_PLAY_SCENARIO, STR_INTRO_TOOLTIP_PLAY_SCENARIO), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_PLAY_HEIGHTMAP), SetStringTip(STR_INTRO_PLAY_HEIGHTMAP, STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP), SetFill(1, 0),
+				EndContainer(),
+
+				/* 'Scenario Editor' and 'Multiplayer' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_EDIT_SCENARIO), SetStringTip(STR_INTRO_SCENARIO_EDITOR, STR_INTRO_TOOLTIP_SCENARIO_EDITOR), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_PLAY_NETWORK), SetStringTip(STR_INTRO_MULTIPLAYER, STR_INTRO_TOOLTIP_MULTIPLAYER), SetFill(1, 0),
+				EndContainer(),
 			EndContainer(),
 
-			/* Multi player */
-			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_PLAY_NETWORK), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_COMPANY_GENERAL, STR_INTRO_MULTIPLAYER, STR_INTRO_TOOLTIP_MULTIPLAYER), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
+			/* Climate selection buttons */
+			NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0), SetPIPRatio(1, 1, 1),
+				NWidget(WWT_IMGBTN_2, Colours::Orange, WID_SGI_TEMPERATE_LANDSCAPE), SetSpriteTip(SPR_SELECT_TEMPERATE, STR_INTRO_TOOLTIP_TEMPERATE),
+				NWidget(WWT_IMGBTN_2, Colours::Orange, WID_SGI_ARCTIC_LANDSCAPE), SetSpriteTip(SPR_SELECT_SUB_ARCTIC, STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE),
+				NWidget(WWT_IMGBTN_2, Colours::Orange, WID_SGI_TROPIC_LANDSCAPE), SetSpriteTip(SPR_SELECT_SUB_TROPICAL, STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE),
+				NWidget(WWT_IMGBTN_2, Colours::Orange, WID_SGI_TOYLAND_LANDSCAPE), SetSpriteTip(SPR_SELECT_TOYLAND, STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE),
 			EndContainer(),
 
 			NWidget(NWID_SELECTION, Colours::Invalid, WID_SGI_BASESET_SELECTION),
@@ -357,16 +392,32 @@ static constexpr std::initializer_list<NWidgetPart> _nested_select_game_widgets 
 				EndContainer(),
 			EndContainer(),
 
-			/* Other */
-			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_OPTIONS), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SETTINGS, STR_INTRO_GAME_OPTIONS, STR_INTRO_TOOLTIP_GAME_OPTIONS), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_CONTENT_DOWNLOAD), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SHOW_VEHICLES, STR_INTRO_ONLINE_CONTENT, STR_INTRO_TOOLTIP_ONLINE_CONTENT), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_EDIT_SCENARIO), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SMALLMAP, STR_INTRO_SCENARIO_EDITOR, STR_INTRO_TOOLTIP_SCENARIO_EDITOR), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
-				NWidget(WWT_PUSHIMGTEXTBTN, Colours::Orange, WID_SGI_HELP), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_QUERY, STR_INTRO_HELP, STR_INTRO_TOOLTIP_HELP), SetAlignment({AlignmentH::Start, AlignmentV::Middle}), SetFill(1, 0),
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_sparse, 0),
+				/* 'Game Options' and 'Settings' buttons */
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_OPTIONS), SetStringTip(STR_INTRO_GAME_OPTIONS, STR_INTRO_TOOLTIP_GAME_OPTIONS), SetFill(1, 0),
+
+				/* 'AI Settings' and 'Game Script Settings' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_AI_SETTINGS), SetStringTip(STR_INTRO_AI_SETTINGS, STR_INTRO_TOOLTIP_AI_SETTINGS), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_GS_SETTINGS), SetStringTip(STR_INTRO_GAMESCRIPT_SETTINGS, STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS), SetFill(1, 0),
+				EndContainer(),
+
+				/* 'Check Online Content' and 'NewGRF Settings' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_CONTENT_DOWNLOAD), SetStringTip(STR_INTRO_ONLINE_CONTENT, STR_INTRO_TOOLTIP_ONLINE_CONTENT), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_GRF_SETTINGS), SetStringTip(STR_INTRO_NEWGRF_SETTINGS, STR_INTRO_TOOLTIP_NEWGRF_SETTINGS), SetFill(1, 0),
+				EndContainer(),
 			EndContainer(),
 
-			NWidget(NWID_VERTICAL),
-				NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_EXIT), SetToolbarMinimalSize(1), SetStringTip(STR_INTRO_QUIT, STR_INTRO_TOOLTIP_QUIT),
+			/* 'Help and Manuals' and 'Highscore Table' buttons */
+			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_HELP), SetStringTip(STR_INTRO_HELP, STR_INTRO_TOOLTIP_HELP), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_HIGHSCORE), SetStringTip(STR_INTRO_HIGHSCORE, STR_INTRO_TOOLTIP_HIGHSCORE), SetFill(1, 0),
+			EndContainer(),
+
+			/* 'Exit' button */
+			NWidget(NWID_HORIZONTAL), SetPIPRatio(1, 0, 1),
+				NWidget(WWT_PUSHTXTBTN, Colours::Orange, WID_SGI_EXIT), SetMinimalSize(128, 0), SetStringTip(STR_INTRO_QUIT, STR_INTRO_TOOLTIP_QUIT),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
