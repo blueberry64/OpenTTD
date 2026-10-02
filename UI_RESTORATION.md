@@ -244,7 +244,7 @@ Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
   Suggested commit: `Change: Restore taller status message popups`
   Completion: pending; exact historical/desired height remains to be resolved.
 
-- [ ] **15 — Remove Coverage and Cargo Graph from town windows (follow-up).**
+- [x] **15 — Remove Coverage and Cargo Graph from town windows (follow-up).**
   Remove both buttons from the individual town view, including Coverage in the
   scenario editor. Close up the bottom row so Location, Local Authority and
   Rename can use the compact space. Preserve editor-specific town controls.
@@ -254,7 +254,9 @@ Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
   Entry points: `src/town_gui.cpp`, `src/widgets/town_widget.h`.
   References: coverage `81d335b081`, `b454ca7110`; graph `bd57aee3a9`.
   Suggested commit: `Change: Remove coverage and graph buttons from town views`
-  Completion: pending; added to the backlog, not implemented.
+  Completion: Release build passed. Normal and editor town windows checked
+  at 1x and 640 × 480; remaining rows fill their width without gaps. Location,
+  Local Authority and editor resizing exercised in an isolated test session.
 
 - [ ] **16 — Remove Industry Chain and Cargo Graph from industry windows (follow-up).**
   Remove both buttons from the individual industry view, leaving Location and
