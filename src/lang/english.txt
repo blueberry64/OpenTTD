@@ -159,6 +159,7 @@ STR_ABBREV_TOFFEE                                               :TF
 STR_ABBREV_BATTERIES                                            :BA
 STR_ABBREV_PLASTIC                                              :PL
 STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :NO
 STR_ABBREV_ALL                                                  :ALL
 
 # 'Mode' of transport for cargoes

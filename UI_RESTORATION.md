@@ -156,7 +156,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Options and Load Game opened successfully. Other entries retain current
   handlers, with direct AI, Game Script and NewGRF entries restored.
 
-- [ ] **10 — Restore station-list cargo filter buttons (review 18).**
+- [x] **10 — Restore station-list cargo filter buttons (review 18).**
   Replace the multi-select cargo dropdown in the company station list with
   directly clickable cargo buttons. Preserve filtering semantics, including
   Ctrl-click multi-selection and the relevant all/none controls.
@@ -165,7 +165,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Entry points: `src/station_gui.cpp`, `src/widgets/station_widget.h`,
   `src/lang/english.txt`. Historical reference: `46da56b191`.
   Suggested commit: `Change: Restore station list cargo filter buttons`
-  Completion: pending.
+  Completion: Release build passed. In-game filters changed the list from
+  286 stations to 14 for coal, 147 for coal plus passengers using Ctrl-click,
+  53 with no cargo rating, and back to 286 with ALL. Resizing and name search
+  retained. Larger cargo sets wrap in rows of 16; no large NewGRF set was tested.
 
 - [ ] **11 — Move small-map controls back to the bottom (review 26).**
   Restore the bottom control layout without leaving a vacant side strip.

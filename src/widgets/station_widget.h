@@ -51,7 +51,9 @@ enum StationListWidgets : WidgetID {
 	WID_STL_SORTDROPBTN,    ///< Dropdown button.
 	WID_STL_FILTER, ///< Filter of name.
 
-	WID_STL_CARGODROPDOWN,  ///< Cargo type dropdown list.
+	WID_STL_NOCARGOWAITING, ///< Stations with no cargo rating.
+	WID_STL_CARGOALL,       ///< Select all cargo types.
+	WID_STL_CARGOSTART,     ///< First dynamically generated cargo button; keep last.
 };
 
 /** Widgets of the #SelectStationWindow class. */
