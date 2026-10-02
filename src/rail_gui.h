@@ -17,14 +17,9 @@ struct Window *ShowBuildRailToolbar(RailType railtype);
 void ReinitGuiAfterToggleElrail(bool disable);
 void ResetSignalVariant(int32_t = 0);
 void InitializeSignalGui();
+void UpdateSignalPicker(int32_t = 0);
 DropDownList GetRailTypeDropDownList(bool for_replacement = false, bool all_option = false);
 void SetDefaultRailGui();
-
-/** Settings for which signals are shown by the signal GUI. */
-enum SignalGUISettings : uint8_t {
-	SIGNAL_GUI_PATH = 0, ///< Show path signals only.
-	SIGNAL_GUI_ALL = 1,  ///< Show all signals, including block and presignals.
-};
 
 /** Settings for which signals are cycled through by control-clicking on the signal with the signal tool. */
 enum SignalCycleSettings : uint8_t {

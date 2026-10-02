@@ -118,7 +118,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   depot Location alongside Rename to keep its original bottom row. Ownership
   checks retained; remaining vehicle/depot variants await final smoke checks.
 
-- [ ] **08 — Always show all signal types; add a hide-semaphores setting (review 10–11).**
+- [x] **08 — Always show all signal types; add a hide-semaphores setting (review 10–11).**
   Always expose block, entry, exit, combo, path, and one-way path signal types.
   Remove the path-only picker mode as a user-facing choice; an old saved
   path-only preference must not hide block/pre-signals. Do not restore the
@@ -135,7 +135,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   `src/table/settings/gui_settings.ini`, `src/widgets/rail_widget.h`,
   `src/lang/english.txt`. References: `7469f00c5b`, `8f01ae675e`.
   Suggested commit: `Change: Show all signal types with optional semaphore hiding`
-  Completion: pending.
+  Completion: Release build passed. All six light-signal buttons and live\n  semaphore toggling/reopening verified in a 1939 game at 1x. Hiding removes\n  the row and resets selection to electric; old path-only config is ignored.\n  Both picker-free placement paths share the new default helper. Signal\n  simulation is unchanged; a full placement matrix was not exercised.
 
 - [ ] **09 — Restore the old main menu with climate pictures (review 14).**
   Restore the familiar text-button grid and four clickable climate pictures.

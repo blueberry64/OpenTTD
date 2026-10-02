@@ -2022,6 +2022,8 @@ STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :Select which si
 STR_CONFIG_SETTING_CYCLE_SIGNAL_GROUP                           :Current group only
 STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :All visible
 
+STR_CONFIG_SETTING_HIDE_SEMAPHORES                               :Hide semaphore signals: {STRING}
+STR_CONFIG_SETTING_HIDE_SEMAPHORES_HELPTEXT                       :Hide semaphore variants in the signal picker and use electric signals for new placement regardless of year. Existing signals are unaffected. All six signal types remain available.
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE                              :Show signal types: {STRING2}
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE_HELPTEXT                     :Choose which signal types are shown in the signal toolbar
 ###length 2
