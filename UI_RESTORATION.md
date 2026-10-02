@@ -258,7 +258,7 @@ Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
   at 1x and 640 × 480; remaining rows fill their width without gaps. Location,
   Local Authority and editor resizing exercised in an isolated test session.
 
-- [ ] **16 — Remove Industry Chain and Cargo Graph from industry windows (follow-up).**
+- [x] **16 — Remove Industry Chain and Cargo Graph from industry windows (follow-up).**
   Remove both buttons from the individual industry view, leaving Location and
   the resize control without unused gaps. Retain the chain/graph windows and
   their other entry points; this supersedes the earlier decision only about
@@ -267,7 +267,9 @@ Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
   Entry points: `src/industry_gui.cpp`, `src/widgets/industry_widget.h`.
   References: graph `3fca0cf3ee`, later renamed by `56942a15c7`.
   Suggested commit: `Change: Remove chain and graph buttons from industry views`
-  Completion: pending; added to the backlog, not implemented.
+  Completion: Release build passed. Industry window, Location action and
+  resizing checked in a normal game at 1x and 640 × 480; the button spans
+  the bottom row without gaps. Editor layout also covered by task 17 checks.
 
 - [ ] **17 — Compact industry accepts/produces into single lines (follow-up).**
   Put accepted cargoes together on one line and produced cargoes together on

@@ -42,7 +42,6 @@
 #include "clear_map.h"
 #include "zoom_func.h"
 #include "industry_cmd.h"
-#include "graph_gui.h"
 #include "querystring_gui.h"
 #include "stringfilter_type.h"
 #include "timer/timer.h"
@@ -815,9 +814,6 @@ public:
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
 		nvp->InitializeViewport(this, Industry::Get(window_number)->location.GetCentreTile(), ScaleZoomGUI(ZoomLevel::Industry));
 
-		const Industry *i = Industry::Get(window_number);
-		if (!i->IsCargoProduced() && !i->IsCargoAccepted()) this->DisableWidget(WID_IV_GRAPH);
-
 		this->InvalidateData();
 	}
 
@@ -1094,16 +1090,6 @@ public:
 				}
 				break;
 			}
-
-			case WID_IV_DISPLAY: {
-				Industry *i = Industry::Get(this->window_number);
-				ShowIndustryCargoesWindow(i->type);
-				break;
-			}
-
-			case WID_IV_GRAPH:
-				ShowIndustryProductionGraph(this->window_number);
-				break;
 		}
 	}
 
@@ -1213,8 +1199,6 @@ static constexpr std::initializer_list<NWidgetPart> _nested_industry_view_widget
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, Colours::Cream, WID_IV_GOTO), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_INDUSTRY_VIEW_LOCATION_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Cream, WID_IV_DISPLAY), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_INDUSTRY_DISPLAY_CHAIN, STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Cream, WID_IV_GRAPH), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_INDUSTRY_VIEW_CARGO_GRAPH, STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, Colours::Cream),
 	EndContainer(),
 };
