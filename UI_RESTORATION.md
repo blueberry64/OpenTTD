@@ -314,11 +314,14 @@ separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and defe
   checked at 1x, including widening, Location, Local Authority and the Rename
   dialog. Growth/noise rows remain visible; editor declarations are unchanged.
 
-- [ ] **20 — Restore station/airport button order (2004 audit).**
+- [x] **20 — Restore station/airport button order (2004 audit).**
   Put Ratings/Accepts between Location and Rename. Retain the other station and
   airport controls and current sizing. Check both modes and the rename dialog.
   Entry point: `src/station_gui.cpp`.
-  Completion: pending.
+  Completion: Release build passed. Airport station checked at 1x with
+  Location, Ratings/Accepts, Rename in that order. Toggled both display modes
+  and opened Rename successfully; Close airport and other controls remain.
+  Non-airport stations share the reordered row but were not separately exercised.
 
 - [ ] **21 — Remove depot Rename (2004 audit follow-up).**
   Remove the button and its unused window handlers/selection panel, freeing
