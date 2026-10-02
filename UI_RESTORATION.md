@@ -75,7 +75,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   shortcut removed from the lower editor row. Further normal-game smoke
   checks are included with the window changes.
 
-- [ ] **05 — Restore large Location buttons (review 3).**
+- [x] **05 — Restore large Location buttons (review 3).**
   Restore bottom-row text buttons in town, industry, station, and waypoint/buoy
   windows instead of their title-bar location pins. Include town windows in the
   scenario editor. Preserve current location actions and modifier behaviour.
@@ -84,7 +84,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   `src/station_gui.cpp`, `src/waypoint_gui.cpp`, `src/lang/english.txt`.
   Historical reference: `5bfcd742b8`.
   Suggested commit: `Change: Restore text Location buttons in object windows`
-  Completion: pending.
+  Completion: release build passed. Town and industry windows visually checked
+  in an isolated game; both bottom Location buttons centre the map. Station,
+  waypoint and editor declarations use the same existing handlers; their full
+  interaction checks remain for the final smoke test.
 
 - [ ] **06 — Restore the vehicle eye button (review 4; preserve 6 and 7).**
   Replace the vehicle title-bar location pin with the larger eye button in the
