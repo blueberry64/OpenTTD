@@ -48,7 +48,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Completion: release build passed; default set in generated client settings.
   Runtime appearance will also be checked with task 03 at 1x.
 
-- [ ] **03 — Default interface scale to 1x / 100% (review 9).**
+- [x] **03 — Default interface scale to 1x / 100% (review 9).**
   Default `gui_scale` to `100` instead of automatic detection (`-1`). Retain
   manual scaling and automatic-scale controls. No separate bevel change was
   requested; check the resulting borders at 1x. Verify that fresh startup does
@@ -56,7 +56,9 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Entry points: `src/table/settings/misc_settings.ini`, `src/settings_gui.cpp`,
   and interface-scale initialization.
   Suggested commit: `Change: Default interface scaling to 100 percent`
-  Completion: pending.
+  Completion: release build passed; isolated startup visually checked at 1x
+  with sprite font. Saved fresh defaults confirm gui_scale=100 and
+  prefer_sprite_font=true.
 
 - [ ] **04 — Remove the tram toolbar button entirely (review 2).**
   Remove the separate tram button from normal and scenario-editor toolbars,
