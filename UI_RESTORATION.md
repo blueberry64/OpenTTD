@@ -3,8 +3,7 @@
 This is the implementation backlog for this personal OpenTTD fork. It records
 the owner's choices from the UI history review. Numbers in parentheses refer
 to that review, not the execution order. Follow-up requests are identified
-separately. Tasks 01–13 are complete. Task 14 is optional and deferred.
-Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
+separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and deferred.
 
 ## How to work through this file
 
@@ -269,34 +268,31 @@ Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
   Suggested commit: `Change: Remove chain and graph buttons from industry views`
   Completion: Release build passed. Industry window, Location action and
   resizing checked in a normal game at 1x and 640 × 480; the button spans
-  the bottom row without gaps. Editor layout also covered by task 17 checks.
+  the bottom row without gaps. Editor Location and resizing verified during task 17 checks.
 
-- [ ] **17 — Compact industry accepts/produces into single lines (follow-up).**
-  Put accepted cargoes together on one line and produced cargoes together on
-  one line, keeping the cargo icons. Aim for the same default viewport and
-  whole-window dimensions across ordinary base-game industries, including
-  industries with no inputs, multiple inputs, or multiple outputs; reserve a
-  consistent information-panel height rather than growing it per cargo.
-  Preserve access to production amounts and transported percentages. Check
-  whether these fit in the compact row before settling the presentation; do
-  not silently discard them to achieve a fixed size. Keep production editing
-  usable in the editor. Long/custom cargo descriptions, stockpiles, closure
-  notices and script text may need an exceptional detailed layout.
-  Historical distinction: 1.6.1 used one inline Requires list for ordinary
-  industries, but already had a Production last month heading and a separate
-  row per output. One-line production and uniform overall sizes are the owner's
-  requested design, not a verified exact restoration of the 2016 layout.
-  Earlier evidence does support uniform sizing: 0.3.4 (2004) had fixed
-  260 × 160 industry windows, reserving space for two separate production rows.
-  Thus uniform size can be restored without combining all production into one
-  row; keep this distinction available when implementing the requested layout.
-  Check a coal mine, factory, farm (two outputs), and an accepting-only industry
-  at 1x, plus resizing and production changes. Coordinate with task 16.
+- [x] **17 — Restore compact, consistently sized industry windows (follow-up).**
+  The owner accepted the earlier fixed-height approach after the TTD/2004
+  comparison: inline accepted cargo, a production heading and separate output
+  rows, with unused rows left blank. This supersedes the initial request to
+  combine all production into a single line. Preserve cargo icons, amounts and
+  transported percentages, and keep production editing usable in the editor.
+  Reserve space for one acceptance line, the production heading and two output
+  rows. Ordinary base-game industries should share default window and viewport
+  dimensions regardless of whether they accept cargo or have one/two outputs.
+  Allow extra height for stockpiles, long translated/custom acceptance lists,
+  additional outputs, closure notices, script text and editor controls.
   Entry points: `src/industry_gui.cpp` (`DrawInfo`, sizing and production-edit
-  hit testing), `src/lang/english.txt`.
-  References: `1.6.1`, `dcc240f826`, `a7adadcf9b`, `481fa7dbb5`.
-  Suggested commit: `Change: Compact industry cargo information`
-  Completion: pending; added to the backlog, not implemented.
+  hit testing). References: `0.3.4`, `1.6.1`, `dcc240f826`, `a7adadcf9b`.
+  Suggested commit: `Change: Restore compact fixed-height industry information`
+  Completion: Release build and all 99 CTest tests passed. Coal mine, factory,
+  farm and power station each open at 260 × 160 with 254 × 86 viewports at 1x.
+  Factory acceptance fits inline with icons; farm shows both output amounts and
+  percentages. Normal/editor Location and resizing checked, including 640 × 480
+  normal play. Editor farm arrows independently change grain/livestock, and the
+  production query still submits/clamps values. An 18-pixel font exercises the
+  detailed acceptance fallback; widening the window restores the inline list.
+  Stockpile/script-specific cases and all translations were not individually
+  exercised.
 
 ## Window size and shape investigation
 
@@ -338,7 +334,9 @@ drawn at y=107; Production last month at y=117; output rows at y=127 and y=137.
 Unused rows remained blank rather than shrinking the window. This supports the
 owner's memory of consistent industry sizes much better than the 2016 baseline.
 It also corrects the implication that uniform sizes must be a new design: the
-new part is combining production rows, not reserving a uniform panel height.
+proposed new part was combining production rows, not reserving a uniform panel
+height. The owner subsequently accepted retaining separate production rows
+with consistent reserved space; task 17 implements that approach.
 By `f8294b1386` (2008-03-28), industry sizing was already content-dependent;
 that commit revised an existing cargo-line-count resizing mechanism.
 
@@ -416,8 +414,8 @@ is selected on the strength of this source comparison alone.
   and strings; 0.5.3 also draws accepted cargoes on one line and declares a
   260 x 160 industry window. Later automatic sizing means that old fixed
   total height should not simply be imposed on every current industry.
-  Now queued as task 17, including the owner's additional compact-production
-  and consistent-size request. Keep cargo icons (2024) and accommodate exceptional
+  Implemented in task 17 using the accepted fixed-height approach with
+  separate production rows. Keep cargo icons (2024) and accommodate exceptional
   custom information. Graph buttons are covered by task 16. The original 1.10.3
   comparison was too recent to catch this change.
 - **No blanket enlargement of the three viewport definitions found.**
@@ -448,7 +446,7 @@ is selected on the strength of this source comparison alone.
   industry Production Graph button (later Cargo Graph, `56942a15c7`).
   `bd57aee3a9` added a town Cargo Graph button. These compete for bottom-row
   width and can force wider windows depending on text metrics. Removal from
-  these individual windows is now queued in tasks 15–16.
+  these individual windows is implemented in tasks 15–16.
 - **2024: title-bar icon proportions changed.** `16eb17418b` replaced fixed
   12 x 14 minimum dimensions for Location/Rename icons with aspect-ratio sizing.
   This affects industry, town, and vehicle windows. Tasks 05–07 remove most of
@@ -495,7 +493,7 @@ These are deliberate scope decisions, not unfinished implementation tasks.
 
 ## Verification and existing configurations
 
-Tasks 01–13 are complete. The Release build succeeds and all 99 CTest tests
+Tasks 01–13 and 15–17 are complete. The Release build succeeds and all 99 CTest tests
 pass. UI checks used an isolated display and temporary configurations; the
 owner's normal configuration and original save files were not overwritten.
 Individual completion notes distinguish runtime checks from source inspection
@@ -521,5 +519,5 @@ smooth_scroll = false
 > Read UI_RESTORATION.md and implement the next explicitly authorized unchecked
 > task. Make forward edits, verify the change, update its checkbox and completion
 > note, and create one commit for that working change. Preserve the other recorded
-> choices. Tasks 15–17 are queued follow-ups. Task 14 remains deferred; the other
+> choices. Tasks 01–13 and 15–17 are complete. Task 14 remains deferred; the other
 > historical observations do not by themselves authorize further UI changes.

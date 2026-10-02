@@ -808,7 +808,7 @@ public:
 	IndustryViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->flags.Set(WindowFlag::DisableVpScroll);
-		this->info_height = WidgetDimensions::scaled.framerect.Vertical() + 2 * GetCharacterHeight(FontSize::Normal); // Info panel has at least two lines text.
+		this->info_height = WidgetDimensions::scaled.framerect.Vertical() + 4 * GetCharacterHeight(FontSize::Normal); // Reserve acceptance, production heading and two output rows.
 
 		this->InitNested(window_number);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
@@ -877,8 +877,6 @@ public:
 		Industry *i = Industry::Get(this->window_number);
 		const IndustrySpec *ind = GetIndustrySpec(i->type);
 		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
-		bool first = true;
-		bool has_accept = false;
 
 		/* Use all the available space past the rect, so that we can enlarge the window if needed. */
 		ir.bottom = INT_MAX;
@@ -891,40 +889,72 @@ public:
 		const int label_indent = WidgetDimensions::scaled.hsep_normal + this->cargo_icon_size.width;
 		bool stockpiling = ind->callback_mask.Any({IndustryCallbackMask::ProductionCargoArrival, IndustryCallbackMask::Production256Ticks});
 
+		struct AcceptedCargoLabel {
+			CargoType cargo;
+			std::string text;
+			int width;
+		};
+		std::vector<AcceptedCargoLabel> accepted;
+		const int heading_width = GetStringBoundingBox(STR_INDUSTRY_VIEW_REQUIRES).width;
+		const std::string separator = GetString(STR_LIST_SEPARATOR);
+		const int separator_width = GetStringBoundingBox(separator).width;
+		int accepted_width = heading_width + WidgetDimensions::scaled.hsep_normal;
 		for (const auto &a : i->accepted) {
 			if (!IsValidCargoType(a.cargo)) continue;
-			has_accept = true;
-			if (first) {
-				DrawString(ir, STR_INDUSTRY_VIEW_REQUIRES);
-				ir.top += GetCharacterHeight(FontSize::Normal);
-				first = false;
-			}
-
-			DrawCargoIcon(ir, a.cargo);
-
 			CargoSuffix suffix;
 			GetCargoSuffix(CargoSuffixDirection::In, CargoSuffixType::View, i, i->type, ind, a.cargo, &a - i->accepted.data(), suffix);
-			/* if the industry is not stockpiling then don't show amount in the acceptance display. */
+			/* Non-stockpiling industries only need cargo names and optional suffixes. */
 			if (!stockpiling && suffix.display == CargoSuffixDisplay::AmountAndText) suffix.display = CargoSuffixDisplay::Text;
 			if (!stockpiling && suffix.display == CargoSuffixDisplay::Amount) suffix.display = CargoSuffixDisplay::None;
 
-			DrawString(ir.Indent(label_indent, rtl), this->GetAcceptedCargoString(a, suffix));
+			std::string text = this->GetAcceptedCargoString(a, suffix);
+			int width = GetStringBoundingBox(text).width;
+			if (!accepted.empty()) accepted_width += separator_width;
+			accepted_width += label_indent + width;
+			accepted.push_back({a.cargo, std::move(text), width});
+		}
+
+		if (accepted.empty() || (!stockpiling && accepted_width <= ir.Width())) {
+			/* Keep the ordinary Requires list on one line, including the cargo icons. */
+			if (!accepted.empty()) {
+				DrawString(ir.WithWidth(heading_width, rtl), STR_INDUSTRY_VIEW_REQUIRES);
+				Rect line = ir.Indent(heading_width + WidgetDimensions::scaled.hsep_normal, rtl);
+				bool first = true;
+				for (const auto &a : accepted) {
+					if (!first) {
+						DrawString(line.WithWidth(separator_width, rtl), separator, TextColour::Yellow);
+						line = line.Indent(separator_width, rtl);
+					}
+					this->DrawCargoIcon(line, a.cargo);
+					line = line.Indent(label_indent, rtl);
+					DrawString(line.WithWidth(a.width, rtl), a.text);
+					line = line.Indent(a.width, rtl);
+					first = false;
+				}
+			}
+			/* Leave an empty acceptance row in industries which take no cargo. */
 			ir.top += GetCharacterHeight(FontSize::Normal);
+		} else {
+			/* Stockpiles and long translated/custom lists retain a detailed layout. */
+			DrawString(ir, STR_INDUSTRY_VIEW_REQUIRES);
+			ir.top += GetCharacterHeight(FontSize::Normal);
+			for (const auto &a : accepted) {
+				this->DrawCargoIcon(ir, a.cargo);
+				ir.top = DrawStringMultiLine(ir.Indent(label_indent, rtl), a.text);
+			}
 		}
 
 		int line_height = this->editable == Editability::Rate ? this->cheat_line_height : GetCharacterHeight(FontSize::Normal);
 		int text_y_offset = (line_height - GetCharacterHeight(FontSize::Normal)) / 2;
 		int button_y_offset = (line_height - SETTING_BUTTON_HEIGHT) / 2;
-		first = true;
+		if (i->IsCargoProduced()) {
+			DrawString(ir, TimerGameEconomy::UsingWallclockUnits() ? STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE : STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE);
+		}
+		ir.top += GetCharacterHeight(FontSize::Normal);
+		if (this->editable == Editability::Rate) this->production_offset_y = ir.top;
+		int production_top = ir.top;
 		for (const auto &p : i->produced) {
 			if (!IsValidCargoType(p.cargo)) continue;
-			if (first) {
-				if (has_accept) ir.top += WidgetDimensions::scaled.vsep_wide;
-				DrawString(ir, TimerGameEconomy::UsingWallclockUnits() ? STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE : STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE);
-				ir.top += GetCharacterHeight(FontSize::Normal);
-				if (this->editable == Editability::Rate) this->production_offset_y = ir.top;
-				first = false;
-			}
 
 			DrawCargoIcon(ir, p.cargo);
 
@@ -940,6 +970,9 @@ public:
 			}
 			ir.top += line_height;
 		}
+
+		/* Reserve two output rows even for industries with one output or none. */
+		ir.top = std::max(ir.top, production_top + 2 * line_height);
 
 		/* Display production multiplier if editable */
 		if (this->editable == Editability::Multiplier) {
