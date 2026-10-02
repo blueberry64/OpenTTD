@@ -296,6 +296,12 @@ separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and defe
 
 ## Window size and shape investigation
 
+A further [2004 button-position and size audit](UI_LAYOUT_AUDIT_2004.md) compares
+this fork with the owner's `historical/0.3.4` worktree. It confirms that industry
+Location occupied only the left half, and finds remaining town/station button
+order differences. Its proposed corrections await choices; the review does not
+authorize replacing newer station, depot or airport functionality with 2004 UI.
+
 The owner requested investigation of industry, town, and vehicle window shape.
 Tasks 15–17 record the latest choices arising from this investigation; other
 findings are not additional implementation tasks. Existing tasks 02–03 and
