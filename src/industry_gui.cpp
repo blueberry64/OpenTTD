@@ -1230,9 +1230,12 @@ static constexpr std::initializer_list<NWidgetPart> _nested_industry_view_widget
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::Cream, WID_IV_INFO), SetMinimalSize(260, 0), SetMinimalTextLines(2, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 	EndContainer(),
-	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, Colours::Cream, WID_IV_GOTO), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_INDUSTRY_VIEW_LOCATION_TOOLTIP),
-		NWidget(WWT_RESIZEBOX, Colours::Cream),
+	NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+		NWidget(WWT_PUSHTXTBTN, Colours::Cream, WID_IV_GOTO), SetMinimalSize(130, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_INDUSTRY_VIEW_LOCATION_TOOLTIP),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_PANEL, Colours::Cream), SetFill(1, 1), SetResize(1, 0), EndContainer(),
+			NWidget(WWT_RESIZEBOX, Colours::Cream),
+		EndContainer(),
 	EndContainer(),
 };
 

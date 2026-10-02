@@ -12,9 +12,18 @@ necessarily the final rendered size: text, sprites, retained controls, settings
 and saved dimensions can enlarge them. Do not mistake a 2004 fixed rectangle
 for a modern preferred size. Earlier in-game checks are identified separately.
 
+## Accepted follow-ups
+
+The owner subsequently accepted industry half-width Location, normal-town button
+order/proportions (keeping information and height), station/airport button order,
+and removal of depot Rename. These are tracked as tasks 18–21 in
+[the checklist](UI_RESTORATION.md). Depot layouts otherwise and airport pickers
+stay as they are. The comparisons below describe the pre-follow-up fork at the
+commit named above; they are not a claim that the mismatches still exist.
+
 ## Most useful follow-ups
 
-These are proposals awaiting choices, not newly authorized implementation tasks.
+The accepted subset is recorded above; the remaining proposals await choices.
 
 - **Industry Location width:** restore the left-half button and a plain right-half
   panel, keeping the resize grip at the far right. Its 2004 width was **130**, not

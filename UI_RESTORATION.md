@@ -294,13 +294,47 @@ separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and defe
   Stockpile/script-specific cases and all translations were not individually
   exercised.
 
+- [x] **18 — Restore the half-width industry Location button (2004 audit).**
+  Split the bottom row into equal halves: Location on the left, a plain panel
+  and the retained resize grip on the right. Keep the proportions on resize and
+  allow translated labels to enlarge the minimum. Supersedes task 16's full-row
+  button. Check normal/editor views and resizing at 1x.
+  Entry point: `src/industry_gui.cpp`.
+  Completion: Release build passed. Normal-game 1x Location is 130 × 12 in
+  a 260-pixel window and remains exactly half-width after widening to 460.
+  Location and resizing exercised. The editor shares this widget tree; it was
+  not separately exercised in this follow-up.
+
+- [ ] **19 — Restore normal-town button order and proportions (2004 audit).**
+  Use Location, Local Authority, Rename in roughly equal thirds, allowing for
+  the resize grip. Keep current town height, growth information and the editor's
+  separate controls. Check all three actions and resizing.
+  Entry point: `src/town_gui.cpp`.
+  Completion: pending.
+
+- [ ] **20 — Restore station/airport button order (2004 audit).**
+  Put Ratings/Accepts between Location and Rename. Retain the other station and
+  airport controls and current sizing. Check both modes and the rename dialog.
+  Entry point: `src/station_gui.cpp`.
+  Completion: pending.
+
+- [ ] **21 — Remove depot Rename (2004 audit follow-up).**
+  Remove the button and its unused window handlers/selection panel, freeing
+  space for the remaining controls. Preserve existing depot names and underlying
+  rename commands/save compatibility. Keep all other depot layout and features;
+  airport pickers are also explicitly left alone. Check train, road and ship
+  depots plus aircraft hangars, including resizing and remaining actions.
+  Entry points: `src/depot_gui.cpp`, `src/widgets/depot_widget.h`.
+  Completion: pending.
+
 ## Window size and shape investigation
 
 A further [2004 button-position and size audit](UI_LAYOUT_AUDIT_2004.md) compares
 this fork with the owner's `historical/0.3.4` worktree. It confirms that industry
 Location occupied only the left half, and finds remaining town/station button
-order differences. Its proposed corrections await choices; the review does not
-authorize replacing newer station, depot or airport functionality with 2004 UI.
+order differences. Tasks 18–21 record the accepted follow-ups. Town information/height and airport
+pickers stay as they are; depots only lose Rename. Other audit proposals remain
+unapproved.
 
 The owner requested investigation of industry, town, and vehicle window shape.
 Tasks 15–17 record the latest choices arising from this investigation; other
