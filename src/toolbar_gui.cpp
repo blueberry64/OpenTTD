@@ -118,7 +118,7 @@ public:
  */
 static DropDownOptions GetToolbarDropDownOptions(DropDownOptions options = {})
 {
-	if (_settings_client.gui.toolbar_dropdown_autoselect) options.Set(DropDownOption::InstantClose).Reset(DropDownOption::Filterable);
+	if (_settings_client.gui.toolbar_dropdown_autoselect) options.Set(DropDownOption::InstantClose);
 	return options;
 }
 
@@ -884,14 +884,9 @@ static CallBackFunction ToolbarZoomOutClick(Window *w)
 }
 
 /* --- Rail button menu --- */
-
-static std::string _railtype_filter; ///< Persistent filter text for railtype dropdown menu.
-static std::string _roadtype_filter; ///< Persistent filter text for roadtype dropdown menu.
-static std::string _tramtype_filter; ///< Persistent filter text for tramtype dropdown menu.
-
 static CallBackFunction ToolbarBuildRailClick(Window *w)
 {
-	ShowDropDownList(w, GetRailTypeDropDownList(), _last_built_railtype, WID_TN_RAILS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_railtype_filter);
+	ShowDropDownList(w, GetRailTypeDropDownList(), _last_built_railtype, WID_TN_RAILS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -912,7 +907,7 @@ static CallBackFunction MenuClickBuildRail(int index)
 
 static CallBackFunction ToolbarBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TN_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TN_ROADS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -933,7 +928,7 @@ static CallBackFunction MenuClickBuildRoad(int index)
 
 static CallBackFunction ToolbarBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TN_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TN_TRAMS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -1276,7 +1271,7 @@ static CallBackFunction ToolbarScenGenIndustry(Window *w)
 
 static CallBackFunction ToolbarScenBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TE_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TE_ROADS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -1295,7 +1290,7 @@ static CallBackFunction ToolbarScenBuildRoad(int index)
 
 static CallBackFunction ToolbarScenBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TE_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TE_TRAMS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 

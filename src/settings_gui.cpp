@@ -1169,7 +1169,7 @@ struct GameOptionsWindow : Window {
 				int selected;
 				DropDownList list = this->BuildDropDownList(widget, &selected);
 				if (!list.empty()) {
-					ShowDropDownList(this, std::move(list), selected, widget, 0, DropDownOption::Filterable);
+					ShowDropDownList(this, std::move(list), selected, widget, 0);
 				} else {
 					if (widget == WID_GO_RESOLUTION_DROPDOWN) ShowErrorMessage(GetEncodedString(STR_ERROR_RESOLUTION_LIST_FAILED), {}, WarningLevel::Error);
 				}

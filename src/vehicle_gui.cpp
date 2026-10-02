@@ -2140,8 +2140,7 @@ public:
 				return;
 
 			case WID_VL_FILTER_BY_CARGO: { // Cargo filter dropdown
-				static std::string cargo_filter;
-				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0, DropDownOption::Filterable, &cargo_filter);
+				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0);
 				break;
 			}
 

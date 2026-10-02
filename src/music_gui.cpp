@@ -598,7 +598,7 @@ struct MusicTrackSelectionWindow : public Window {
 
 			case WID_MTS_MUSICSET: {
 				int selected = 0;
-				ShowDropDownList(this, BuildSetDropDownList<BaseMusic>(&selected), selected, widget, 0, DropDownOption::Filterable);
+				ShowDropDownList(this, BuildSetDropDownList<BaseMusic>(&selected), selected, widget, 0);
 				break;
 			}
 

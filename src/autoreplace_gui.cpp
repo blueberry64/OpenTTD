@@ -538,14 +538,12 @@ public:
 			}
 
 			case WID_RV_RAIL_TYPE_DROPDOWN: { // Railtype selection dropdown menu
-				static std::string railtype_filter;
-				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, widget, 0, DropDownOption::Filterable, &railtype_filter);
+				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, widget, 0);
 				break;
 			}
 
 			case WID_RV_ROAD_TYPE_DROPDOWN: { // Roadtype selection dropdown menu
-				static std::string roadtype_filter;
-				ShowDropDownList(this, GetRoadTypeDropDownList(ROADTRAMTYPES_ALL, true, true), this->sel_roadtype, widget, 0, DropDownOption::Filterable, &roadtype_filter);
+				ShowDropDownList(this, GetRoadTypeDropDownList(ROADTRAMTYPES_ALL, true, true), this->sel_roadtype, widget, 0);
 				break;
 			}
 

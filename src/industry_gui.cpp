@@ -1795,14 +1795,12 @@ public:
 				break;
 
 			case WID_ID_FILTER_BY_ACC_CARGO: { // Cargo filter dropdown
-				static std::string acc_cargo_filter;
-				ShowDropDownList(this, this->BuildCargoDropDownList(), this->accepted_cargo_filter_criteria, widget, 0, DropDownOption::Filterable, &acc_cargo_filter);
+				ShowDropDownList(this, this->BuildCargoDropDownList(), this->accepted_cargo_filter_criteria, widget, 0);
 				break;
 			}
 
 			case WID_ID_FILTER_BY_PROD_CARGO: { // Cargo filter dropdown
-				static std::string prod_cargo_filter;
-				ShowDropDownList(this, this->BuildCargoDropDownList(), this->produced_cargo_filter_criteria, widget, 0, DropDownOption::Filterable, &prod_cargo_filter);
+				ShowDropDownList(this, this->BuildCargoDropDownList(), this->produced_cargo_filter_criteria, widget, 0);
 				break;
 			}
 
@@ -3305,10 +3303,9 @@ struct IndustryCargoesWindow : public Window {
 					lst.push_back(MakeDropDownListIconItem(d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index()));
 				}
 				if (!lst.empty()) {
-					static std::string cargo_filter;
 					int selected = -1;
 					if (CargoType *ptr = std::get_if<CargoType>(&this->ind_cargo); ptr != nullptr) selected = to_underlying(*ptr);
-					ShowDropDownList(this, std::move(lst), selected, WID_IC_CARGO_DROPDOWN, 0, DropDownOption::Filterable, &cargo_filter);
+					ShowDropDownList(this, std::move(lst), selected, WID_IC_CARGO_DROPDOWN, 0);
 				}
 				break;
 			}
@@ -3323,14 +3320,13 @@ struct IndustryCargoesWindow : public Window {
 				if (!lst.empty()) lst.push_back(MakeDropDownListDividerItem());
 				lst.push_back(MakeDropDownListStringItem(STR_INDUSTRY_CARGOES_HOUSES, INT_MAX));
 				if (!lst.empty()) {
-					static std::string cargo_filter;
 					int selected = -1;
 					if (IndustryType *ptr = std::get_if<IndustryType>(&this->ind_cargo); ptr != nullptr) {
 						selected = *ptr;
 					} else if (std::holds_alternative<HouseID>(this->ind_cargo)) {
 						selected = INT_MAX;
 					}
-					ShowDropDownList(this, std::move(lst), selected, WID_IC_IND_DROPDOWN, 0, DropDownOption::Filterable, &cargo_filter);
+					ShowDropDownList(this, std::move(lst), selected, WID_IC_IND_DROPDOWN, 0);
 				}
 				break;
 			}

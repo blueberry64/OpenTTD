@@ -181,7 +181,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   legends checked in-game, including shrinking to minimum size and expanding
   again. The map fills the full width with no vacant side strip.
 
-- [ ] **12 — Remove search from dropdown menus (review 28).**
+- [x] **12 — Remove search from dropdown menus (review 28).**
   Remove the dropdown text-filter UI and associated filtering/focus behaviour
   across affected menus. Keep ordinary selection, scrolling, keyboard handling,
   and multi-select behaviour. Ensure stale persistent query strings cannot
@@ -193,7 +193,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   `DropDownOption::Filterable` or persistent dropdown filter text.
   Historical references: `38b74639be`, `d685fc97f1`, `d02d57b348`.
   Suggested commit: `Change: Remove dropdown menu text search`
-  Completion: pending.
+  Completion: Release build passed. Language and currency dropdowns checked
+  in-game without search fields; wheel scrolling and selection work. Removed
+  filter widgets, text matching, persistent queries and caller flags. Dedicated
+  station/build-window searches remain; badge multi-select retains Persist.
 
 - [ ] **13 — Default to immediate viewport movement (follow-up).**
   Default `gui.smooth_scroll` to `false`, retaining the option. Location/eye

@@ -20,6 +20,7 @@
 #include "station_func.h"
 #include "station_gui.h"
 #include "strings_func.h"
+#include "stringfilter_type.h"
 #include "string_func.h"
 #include "window_func.h"
 #include "viewport_func.h"
