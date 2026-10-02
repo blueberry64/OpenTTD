@@ -305,12 +305,14 @@ separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and defe
   Location and resizing exercised. The editor shares this widget tree; it was
   not separately exercised in this follow-up.
 
-- [ ] **19 — Restore normal-town button order and proportions (2004 audit).**
+- [x] **19 — Restore normal-town button order and proportions (2004 audit).**
   Use Location, Local Authority, Rename in roughly equal thirds, allowing for
   the resize grip. Keep current town height, growth information and the editor's
   separate controls. Check all three actions and resizing.
   Entry point: `src/town_gui.cpp`.
-  Completion: pending.
+  Completion: Release build passed. Normal-town order and equal button widths
+  checked at 1x, including widening, Location, Local Authority and the Rename
+  dialog. Growth/noise rows remain visible; editor declarations are unchanged.
 
 - [ ] **20 — Restore station/airport button order (2004 audit).**
   Put Ratings/Accepts between Location and Rename. Retain the other station and
