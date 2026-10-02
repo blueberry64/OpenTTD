@@ -40,12 +40,13 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Completion: release build passed; fresh-config runtime saved the traditional
   selection default as true. Existing explicit preferences are preserved.
 
-- [ ] **02 — Default to the traditional sprite font (review 8).**
+- [x] **02 — Default to the traditional sprite font (review 8).**
   Default `prefer_sprite_font` to `true`; retain font configuration controls.
   Check startup, settings, and representative windows for correct text sizing.
   Entry points: `src/table/settings/misc_settings.ini`, `src/fontcache.cpp`.
   Suggested commit: `Change: Default to the traditional sprite font`
-  Completion: pending.
+  Completion: release build passed; default set in generated client settings.
+  Runtime appearance will also be checked with task 03 at 1x.
 
 - [ ] **03 — Default interface scale to 1x / 100% (review 9).**
   Default `gui_scale` to `100` instead of automatic detection (`-1`). Retain
