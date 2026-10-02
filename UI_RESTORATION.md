@@ -3,7 +3,8 @@
 This is the implementation backlog for this personal OpenTTD fork. It records
 the owner's choices from the UI history review. Numbers in parentheses refer
 to that review, not the execution order. Follow-up requests are identified
-separately. Tasks 01–13 are authorized for implementation. Task 14 is optional and deferred.
+separately. Tasks 01–13 are complete. Task 14 is optional and deferred.
+Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
 
 ## How to work through this file
 
@@ -243,11 +244,58 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Suggested commit: `Change: Restore taller status message popups`
   Completion: pending; exact historical/desired height remains to be resolved.
 
-## Window size and shape investigation — awaiting choices
+- [ ] **15 — Remove Coverage and Cargo Graph from town windows (follow-up).**
+  Remove both buttons from the individual town view, including Coverage in the
+  scenario editor. Close up the bottom row so Location, Local Authority and
+  Rename can use the compact space. Preserve editor-specific town controls.
+  Remove associated widget lookups and view-specific handlers where obsolete;
+  retain the underlying station coverage and graph features elsewhere.
+  Check normal/editor layouts at 1x, resizing, and the remaining buttons.
+  Entry points: `src/town_gui.cpp`, `src/widgets/town_widget.h`.
+  References: coverage `81d335b081`, `b454ca7110`; graph `bd57aee3a9`.
+  Suggested commit: `Change: Remove coverage and graph buttons from town views`
+  Completion: pending; added to the backlog, not implemented.
+
+- [ ] **16 — Remove Industry Chain and Cargo Graph from industry windows (follow-up).**
+  Remove both buttons from the individual industry view, leaving Location and
+  the resize control without unused gaps. Retain the chain/graph windows and
+  their other entry points; this supersedes the earlier decision only about
+  keeping the chain button in this particular window.
+  Check narrow/default widths, resizing, and Location in game and editor.
+  Entry points: `src/industry_gui.cpp`, `src/widgets/industry_widget.h`.
+  References: graph `3fca0cf3ee`, later renamed by `56942a15c7`.
+  Suggested commit: `Change: Remove chain and graph buttons from industry views`
+  Completion: pending; added to the backlog, not implemented.
+
+- [ ] **17 — Compact industry accepts/produces into single lines (follow-up).**
+  Put accepted cargoes together on one line and produced cargoes together on
+  one line, keeping the cargo icons. Aim for the same default viewport and
+  whole-window dimensions across ordinary base-game industries, including
+  industries with no inputs, multiple inputs, or multiple outputs; reserve a
+  consistent information-panel height rather than growing it per cargo.
+  Preserve access to production amounts and transported percentages. Check
+  whether these fit in the compact row before settling the presentation; do
+  not silently discard them to achieve a fixed size. Keep production editing
+  usable in the editor. Long/custom cargo descriptions, stockpiles, closure
+  notices and script text may need an exceptional detailed layout.
+  Historical distinction: 1.6.1 used one inline Requires list for ordinary
+  industries, but already had a Production last month heading and a separate
+  row per output. One-line production and uniform overall sizes are the owner's
+  requested design, not a verified exact restoration of the 2016 layout.
+  Check a coal mine, factory, farm (two outputs), and an accepting-only industry
+  at 1x, plus resizing and production changes. Coordinate with task 16.
+  Entry points: `src/industry_gui.cpp` (`DrawInfo`, sizing and production-edit
+  hit testing), `src/lang/english.txt`.
+  References: `1.6.1`, `dcc240f826`, `a7adadcf9b`, `481fa7dbb5`.
+  Suggested commit: `Change: Compact industry cargo information`
+  Completion: pending; added to the backlog, not implemented.
+
+## Window size and shape investigation
 
 The owner requested investigation of industry, town, and vehicle window shape.
-The findings below are not additional approved implementation tasks. Existing
-tasks 02–03 and 05–07 already cover font/scale and Location/Rename/eye controls.
+Tasks 15–17 record the latest choices arising from this investigation; other
+findings are not additional implementation tasks. Existing tasks 02–03 and
+05–07 already cover font/scale and Location/Rename/eye controls.
 "Industry menu" could mean the individual industry view, Industry Directory,
 or Fund New Industry, so this investigation covers all three.
 
@@ -255,6 +303,64 @@ Comparison: local `1.10.3`, `1.11.0`, `13.0`, `14.0`, and current source at
 `97862f4a4b`. This was a source/history comparison, not a rendered pixel-size
 comparison. Font metrics, interface scale, content, minimum button widths,
 and saved window sizes can change actual window dimensions.
+
+### Ten-year comparison: 1.6.1 (2016-06-30) versus this fork
+
+Compared the actual widget declarations, window descriptors, drawing code and
+relevant history against `1.6.1` (`4627d5c28f`) and this fork at `d43f9a98d3`.
+These are source measurements, not measurements of side-by-side screenshots.
+
+| Window | 2016 sizing declarations | Current fork | 2016 arrangement |
+| --- | --- | --- | --- |
+| Town | Viewport minimum 254 × 86; preferred window 260 × 150 | Same viewport minimum and preferred window size | Location, Local Authority, Rename across the bottom; no Coverage or Cargo Graph. Editor had Rename in the title bar and Location/Expand/Delete below. |
+| Industry | Viewport minimum 254 × 86; preferred window 260 × 120, expanded to fit information | Same viewport minimum and preferred window size | Location and Display chain below; inline Requires list for ordinary industries; production heading plus one row per output. |
+| Road vehicle (also ship/aircraft) | Shared viewport minimum 226 × 84; preferred window 250 × 116 | Same declarations | Five 18-pixel side buttons including the eye; status bar below. |
+| Train | Same shared viewport minimum; separate preferred window 250 × 134 | Same declarations; still a separate train descriptor | Six 18-pixel side buttons, including the additional ignore-signal button. |
+
+**The train/road height difference is real.** The extra train button needs an
+additional 18 pixels of side-column height at 1x, and the resizable viewport
+beside it grows to match. Sharing the 226 × 84 minimum never meant equal final
+viewport heights. The current fork again has the eye in that column, and still
+selects `_train_view_desc` for trains and `_vehicle_view_desc` otherwise. The
+previous summary of the shared viewport minimum alone did not capture this.
+
+Subtle changes found since that baseline:
+
+- **2016-04-17, `b8189977b4`:** long vehicle captions now widen the viewport
+  instead of stretching the side buttons. Already present in 1.6.1, but relevant
+  to memories of earlier versions.
+- **2017-02-26, `dcc240f826`:** accepted industry cargo became a heading plus
+  individual rows. This really changed information-panel height by cargo count.
+  Production was already multiline before this change; old windows were not
+  all identical in total height either.
+- **2019, `81d335b081` / `b454ca7110`:** Coverage added to normal/editor town
+  windows, introducing another bottom button that can affect minimum width.
+- **2020-12-27, `589feba0eb` (released in 2021):** eye moved out of the vehicle
+  side column, Rename moved into its title bar, destination pin added below.
+  Removing one side button changed the height constraint without changing the
+  shared viewport minimum. Tasks 06–07 restore eye/Rename; destination pin stays.
+- **2021-05-08, `330a305c99`:** inset viewport borders switched from explicit
+  scaled padding to automatic bevel padding. At 1x the intended one-pixel inset
+  is retained; larger scales are where the old excess border space differed.
+- **2022-09-04, `93d2d4590f`:** embedded viewport zoom made aware of GUI scaling.
+  At 1x, town/vehicle views still use the traditional normal map zoom, while
+  industry uses one step farther out. Beware enum names: 2016 `OUT_4X` corresponds
+  to today's `Normal`. Town actually used `ZOOM_LVL_NEWS` in 1.6.1, so comparing
+  the unused old `ZOOM_LVL_TOWN` constant gives the wrong answer.
+- **2022-09-23, `890b2666d3`:** vehicle status-bar height switched from an
+  explicit text-line minimum to font/sprite dimensions plus widget padding.
+  `60404c3aea` (2022-11-14) also adjusted status-icon sizing/centering. These
+  can affect the surrounding chrome; no exact rendered pixel delta established.
+- **2022–2025:** production spacing/editing fixes, cargo icons and added graph
+  buttons affect information-panel or bottom-row proportions. See details below.
+
+Conclusion from source: no blanket change to the declared map-preview minimums
+since 2016. Actual proportions can still change through the adjacent controls,
+information rows, text width, font/scale, and saved window dimensions. Exact
+pixel comparison remains unmeasured; it would require matching 1x sprite-font
+screenshots with default window sizes in both versions, separating the map image,
+border, information panel and button rows. No additional viewport-size change
+is selected on the strength of this source comparison alone.
 
 ### Individual windows
 
@@ -272,11 +378,9 @@ and saved window sizes can change actual window dimensions.
   and strings; 0.5.3 also draws accepted cargoes on one line and declares a
   260 x 160 industry window. Later automatic sizing means that old fixed
   total height should not simply be imposed on every current industry.
-  Candidate, not yet approved: restore compact inline accepted-cargo text
-  for ordinary industries, with wrapping or a detailed fallback for long
-  lists/custom stockpile information. The owner explicitly wants to keep
-  cargo icons (2024); preserve them in any later compact-layout proposal.
-  Graph buttons and Location placement are separate decisions. The original 1.10.3
+  Now queued as task 17, including the owner's additional compact-production
+  and consistent-size request. Keep cargo icons (2024) and accommodate exceptional
+  custom information. Graph buttons are covered by task 16. The original 1.10.3
   comparison was too recent to catch this change.
 - **No blanket enlargement of the three viewport definitions found.**
   Industry and town viewports still declare a minimum of 254 x 86; the vehicle
@@ -300,14 +404,13 @@ and saved window sizes can change actual window dimensions.
 - **2022–2024: industry information text changed.** `a7adadcf9b` indented
   production text and fixed production-edit controls. `481fa7dbb5` added icons
   alongside accepted/produced cargoes and reserved horizontal space for them.
-  Owner decision: keep the cargo icons. Compacting the input list remains a
-  separate candidate; do not implement a text-only panel.
+  Owner decision: keep the cargo icons when compacting the cargo lists in
+  task 17; do not implement a text-only panel.
 - **2024–2025: graph buttons added to bottom rows.** `3fca0cf3ee` added an
   industry Production Graph button (later Cargo Graph, `56942a15c7`).
   `bd57aee3a9` added a town Cargo Graph button. These compete for bottom-row
-  width and can force wider windows depending on text metrics. Candidate:
-  remove or relocate the graph buttons while preserving the graph features.
-  No removal or relocation has been chosen yet.
+  width and can force wider windows depending on text metrics. Removal from
+  these individual windows is now queued in tasks 15–16.
 - **2024: title-bar icon proportions changed.** `16eb17418b` replaced fixed
   12 x 14 minimum dimensions for Location/Rename icons with aspect-ratio sizing.
   This affects industry, town, and vehicle windows. Tasks 05–07 remove most of
@@ -328,8 +431,8 @@ and saved window sizes can change actual window dimensions.
 | Vehicle lists | Added cargo filtering in 2022 and made dropdown widths fit their labels, changing control layout/width. | `0d303d6c3f`, `f7e2b6ef12` |
 
 Dedicated directory search fields are separate from dropdown search. Task 12
-does not remove them. The industry/cargo-chain diagram remains out of scope
-under the owner's existing decision about review item 27.
+does not remove them. The industry/cargo-chain diagram itself remains out of
+scope; task 16 removes only its button from the individual industry view.
 
 ## Leave as-is
 
@@ -349,7 +452,7 @@ These are deliberate scope decisions, not unfinished implementation tasks.
 | 22 | Keep current graph colours. |
 | 23–24 | Keep current multiplayer joining, Online Players, and Give Money UI. |
 | 25 | Keep current signal dragging behaviour. |
-| 27 | Keep current industry/cargo-chain window. |
+| 27 | Keep current industry/cargo-chain window itself; task 16 removes its button from the individual industry view. |
 | Factory screenshot follow-up | Keep accepted/produced cargo icons in the industry information panel. |
 
 ## Verification and existing configurations
@@ -380,4 +483,5 @@ smooth_scroll = false
 > Read UI_RESTORATION.md and implement the next explicitly authorized unchecked
 > task. Make forward edits, verify the change, update its checkbox and completion
 > note, and create one commit for that working change. Preserve the other recorded
-> choices. Task 14 and the window-layout candidates remain deferred until chosen.
+> choices. Tasks 15–17 are queued follow-ups. Task 14 remains deferred; the other
+> historical observations do not by themselves authorize further UI changes.
