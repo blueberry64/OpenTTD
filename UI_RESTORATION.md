@@ -3,7 +3,7 @@
 This is the implementation backlog for this personal OpenTTD fork. It records
 the owner's choices from the UI history review. Numbers in parentheses refer
 to that review, not the execution order. Follow-up requests are identified
-separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and deferred.
+separately. Tasks 01–13 and 15–21 are complete. Task 14 is optional and deferred.
 
 ## How to work through this file
 
@@ -323,14 +323,17 @@ separately. Tasks 01–13 and 15–17 are complete. Task 14 is optional and defe
   and opened Rename successfully; Close airport and other controls remain.
   Non-airport stations share the reordered row but were not separately exercised.
 
-- [ ] **21 — Remove depot Rename (2004 audit follow-up).**
+- [x] **21 — Remove depot Rename (2004 audit follow-up).**
   Remove the button and its unused window handlers/selection panel, freeing
   space for the remaining controls. Preserve existing depot names and underlying
   rename commands/save compatibility. Keep all other depot layout and features;
   airport pickers are also explicitly left alone. Check train, road and ship
   depots plus aircraft hangars, including resizing and remaining actions.
   Entry points: `src/depot_gui.cpp`, `src/widgets/depot_widget.h`.
-  Completion: pending.
+  Completion: Release build passed. Train, road and ship depot windows checked
+  at 1x without Rename or an empty slot. Train New Vehicles, Clone toggle,
+  Location and widening/shrinking exercised. Hangars share the same widget tree
+  but were not separately exercised. Underlying rename commands remain intact.
 
 ## Window size and shape investigation
 
