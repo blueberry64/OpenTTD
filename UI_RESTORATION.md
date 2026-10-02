@@ -282,6 +282,10 @@ Tasks 15–17 are requested follow-ups, queued for a later implementation pass.
   industries, but already had a Production last month heading and a separate
   row per output. One-line production and uniform overall sizes are the owner's
   requested design, not a verified exact restoration of the 2016 layout.
+  Earlier evidence does support uniform sizing: 0.3.4 (2004) had fixed
+  260 × 160 industry windows, reserving space for two separate production rows.
+  Thus uniform size can be restored without combining all production into one
+  row; keep this distinction available when implementing the requested layout.
   Check a coal mine, factory, farm (two outputs), and an accepting-only industry
   at 1x, plus resizing and production changes. Coordinate with task 16.
   Entry points: `src/industry_gui.cpp` (`DrawInfo`, sizing and production-edit
@@ -303,6 +307,36 @@ Comparison: local `1.10.3`, `1.11.0`, `13.0`, `14.0`, and current source at
 `97862f4a4b`. This was a source/history comparison, not a rendered pixel-size
 comparison. Font metrics, interface scale, content, minimum button widths,
 and saved window sizes can change actual window dimensions.
+
+### Earlier baseline: TTD manual and OpenTTD 0.3.4 (2004)
+
+The original TTD manual's screenshots on printed pages 35 and 42 show the
+shorter road-vehicle view and taller train view with the additional side button.
+Source: [MicroProse TTD manual](https://drwjf.github.io/ctm/references/Transport_Tycoon_Deluxe_Manual_EN.pdf).
+The scan supports the proportions; exact pixel values below were verified in
+OpenTTD `0.3.4` (`e8c8a3f397`), not measured from the original TTD executable.
+
+| Window | Fixed whole-window size | Actual map viewport |
+| --- | --- | --- |
+| Train | 250 × 134 | 226 × 102 |
+| Road vehicle | 250 × 116 | 226 × 84 |
+| Town | 260 × 150 | 254 × 86 |
+| Industry | 260 × 160 | 254 × 86 |
+
+Verified via `_train_view_desc`, `_roadveh_view_desc`, `_town_view_desc`,
+`_industry_view_desc` and their `AssignWindowViewport` calls in the tag's
+`train_gui.c`, `roadveh_gui.c`, `town_gui.c`, and `industry_gui.c`.
+Train and road map views differed by exactly one 18-pixel button row; town and
+industry map views matched despite different total window heights.
+
+All industries used the same fixed window size in that version. Requires was
+drawn at y=107; Production last month at y=117; output rows at y=127 and y=137.
+Unused rows remained blank rather than shrinking the window. This supports the
+owner's memory of consistent industry sizes much better than the 2016 baseline.
+It also corrects the implication that uniform sizes must be a new design: the
+new part is combining production rows, not reserving a uniform panel height.
+By `f8294b1386` (2008-03-28), industry sizing was already content-dependent;
+that commit revised an existing cargo-line-count resizing mechanism.
 
 ### Ten-year comparison: 1.6.1 (2016-06-30) versus this fork
 
