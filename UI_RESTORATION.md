@@ -170,14 +170,16 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   53 with no cargo rating, and back to 286 with ALL. Resizing and name search
   retained. Larger cargo sets wrap in rows of 16; no large NewGRF set was tested.
 
-- [ ] **11 — Move small-map controls back to the bottom (review 26).**
+- [x] **11 — Move small-map controls back to the bottom (review 26).**
   Restore the bottom control layout without leaving a vacant side strip.
   Preserve current map modes, legends, filters, and interactions. Check minimum
   size, resizing, and expanded legends.
   Entry points: `src/smallmap_gui.cpp`, `src/widgets/smallmap_widget.h`.
   Historical reference: `368ade294a`.
   Suggested commit: `Change: Restore small map controls below the map`
-  Completion: pending.
+  Completion: Release build passed. Bottom controls, industry and cargo-flow
+  legends checked in-game, including shrinking to minimum size and expanding
+  again. The map fills the full width with no vacant side strip.
 
 - [ ] **12 — Remove search from dropdown menus (review 28).**
   Remove the dropdown text-filter UI and associated filtering/focus behaviour
