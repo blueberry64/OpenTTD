@@ -60,7 +60,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   with sprite font. Saved fresh defaults confirm gui_scale=100 and
   prefer_sprite_font=true.
 
-- [ ] **04 — Remove the tram toolbar button entirely (review 2).**
+- [x] **04 — Remove the tram toolbar button entirely (review 2).**
   Remove the separate tram button from normal and scenario-editor toolbars,
   including compact/wrapped arrangements. Close up its space. Do not add a
   replacement entry to the road menu. Retain underlying tram support and
@@ -70,7 +70,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Entry points: `src/toolbar_gui.cpp`, `src/widgets/toolbar_widget.h`.
   Historical reference: toolbar portions of `c02ef3e456` only.
   Suggested commit: `Change: Remove the tram construction toolbar button`
-  Completion: pending.
+  Completion: release build passed; editor toolbar opened without a tram
+  button or gap. Compact arrangements balanced after removal; duplicate map
+  shortcut removed from the lower editor row. Further normal-game smoke
+  checks are included with the window changes.
 
 - [ ] **05 — Restore large Location buttons (review 3).**
   Restore bottom-row text buttons in town, industry, station, and waypoint/buoy
