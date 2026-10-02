@@ -89,7 +89,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   waypoint and editor declarations use the same existing handlers; their full
   interaction checks remain for the final smoke test.
 
-- [ ] **06 — Restore the vehicle eye button (review 4; preserve 6 and 7).**
+- [x] **06 — Restore the vehicle eye button (review 4; preserve 6 and 7).**
   Replace the vehicle title-bar location pin with the larger eye button in the
   side column. Preserve the current click/double-click/Ctrl-click actions and
   follow-state indication. Keep the separate destination pin and current
@@ -99,7 +99,9 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Entry points: `src/vehicle_gui.cpp`, `src/widgets/vehicle_widget.h`, sprites.
   Historical reference: layout portions of `589feba0eb` only.
   Suggested commit: `Change: Restore the vehicle location eye button`
-  Completion: pending.
+  Completion: release build passed; train side-column eye visually checked and
+  clicked in-game. Shared vehicle layout and unchanged click/follow handlers
+  retained for all types; other vehicle types await final smoke checks.
 
 - [ ] **07 — Restore text Rename buttons (review 5).**
   Replace the small rename icons with the previous text controls and placement
