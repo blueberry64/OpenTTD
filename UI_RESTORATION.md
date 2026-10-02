@@ -45,8 +45,8 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Check startup, settings, and representative windows for correct text sizing.
   Entry points: `src/table/settings/misc_settings.ini`, `src/fontcache.cpp`.
   Suggested commit: `Change: Default to the traditional sprite font`
-  Completion: release build passed; default set in generated client settings.
-  Runtime appearance will also be checked with task 03 at 1x.
+  Completion: release build passed; fresh-config startup uses the sprite font.
+  Main menu, settings and representative game windows visually checked at 1x.
 
 - [x] **03 — Default interface scale to 1x / 100% (review 9).**
   Default `gui_scale` to `100` instead of automatic detection (`-1`). Retain
@@ -70,10 +70,10 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Entry points: `src/toolbar_gui.cpp`, `src/widgets/toolbar_widget.h`.
   Historical reference: toolbar portions of `c02ef3e456` only.
   Suggested commit: `Change: Remove the tram construction toolbar button`
-  Completion: release build passed; editor toolbar opened without a tram
-  button or gap. Compact arrangements balanced after removal; duplicate map
-  shortcut removed from the lower editor row. Further normal-game smoke
-  checks are included with the window changes.
+  Completion: release build passed; normal and editor toolbars checked at
+  1024x768 and 640x480 without a tram button or gap. Compact arrangements
+  balanced in source; duplicate map shortcut removed from the lower editor
+  row. Underlying tram shortcuts retain their direct construction handlers.
 
 - [x] **05 — Restore large Location buttons (review 3).**
   Restore bottom-row text buttons in town, industry, station, and waypoint/buoy
@@ -85,9 +85,9 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Historical reference: `5bfcd742b8`.
   Suggested commit: `Change: Restore text Location buttons in object windows`
   Completion: release build passed. Town and industry windows visually checked
-  in an isolated game; both bottom Location buttons centre the map. Station,
-  waypoint and editor declarations use the same existing handlers; their full
-  interaction checks remain for the final smoke test.
+  in an isolated game; both bottom Location buttons centre the map. Station
+  and scenario-editor town Location buttons also checked in-game. Waypoint
+  and buoy declarations retain existing handlers but were not exercised.
 
 - [x] **06 — Restore the vehicle eye button (review 4; preserve 6 and 7).**
   Replace the vehicle title-bar location pin with the larger eye button in the
@@ -101,7 +101,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Suggested commit: `Change: Restore the vehicle location eye button`
   Completion: release build passed; train side-column eye visually checked and
   clicked in-game. Shared vehicle layout and unchanged click/follow handlers
-  retained for all types; other vehicle types await final smoke checks.
+  retained for all types; other vehicle types were not individually exercised.
 
 - [x] **07 — Restore text Rename buttons (review 5).**
   Replace the small rename icons with the previous text controls and placement
@@ -116,7 +116,8 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Completion: release build passed. Town buttons/dialog and train details
   Rename checked in-game, including submitting a new vehicle name. Restored
   depot Location alongside Rename to keep its original bottom row. Ownership
-  checks retained; remaining vehicle/depot variants await final smoke checks.
+  checks retained. Station and editor-town rename dialogs also checked;
+  remaining vehicle/depot variants were not individually exercised.
 
 - [x] **08 — Always show all signal types; add a hide-semaphores setting (review 10–11).**
   Always expose block, entry, exit, combo, path, and one-way path signal types.
@@ -198,7 +199,7 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   filter widgets, text matching, persistent queries and caller flags. Dedicated
   station/build-window searches remain; badge multi-select retains Persist.
 
-- [ ] **13 — Default to immediate viewport movement (follow-up).**
+- [x] **13 — Default to immediate viewport movement (follow-up).**
   Default `gui.smooth_scroll` to `false`, retaining the option. Location/eye
   actions and small-map clicks should jump directly to their destination.
   Arrow-key panning should apply each movement directly without easing or
@@ -213,7 +214,11 @@ separately. Tasks 01–13 are authorized for implementation. Task 14 is optional
   Historical reference: `36579dd18b` (2024-01-25, enabled smooth scrolling by
   default); `ea8c1d8597` and `05b253b33b` changed animation timing that month.
   Suggested commit: `Change: Default to immediate viewport scrolling`
-  Completion: pending.
+  Completion: Release build passed; fresh config saves smooth_scroll=false.
+  Station and editor-town Location buttons jump directly to their targets.
+  Ordinary, diagonal and Shift-arrow panning checked; viewport image regions
+  immediately after release and 0.2 seconds later are identical for ordinary
+  and Shift-arrow movement. The existing smooth-scroll option is retained.
 
 - [ ] **14 — Optional/deferred: taller status-message popups (screenshot follow-up).**
   The owner wants the blue "Message" news popup to have the taller appearance
@@ -347,8 +352,32 @@ These are deliberate scope decisions, not unfinished implementation tasks.
 | 27 | Keep current industry/cargo-chain window. |
 | Factory screenshot follow-up | Keep accepted/produced cargo icons in the industry information panel. |
 
+## Verification and existing configurations
+
+Tasks 01–13 are complete. The Release build succeeds and all 99 CTest tests
+pass. UI checks used an isolated display and temporary configurations; the
+owner's normal configuration and original save files were not overwritten.
+Individual completion notes distinguish runtime checks from source inspection
+and record coverage limitations.
+
+Existing saved preferences take precedence over defaults. To apply all five
+new defaults to an existing configuration, merge these values into its existing
+sections while the game is closed; do not replace the whole configuration:
+
+```ini
+[misc]
+prefer_sprite_font = true
+gui_scale = 100
+
+[gui]
+toolbar_dropdown_autoselect = true
+hide_semaphores = true
+smooth_scroll = false
+```
+
 ## Resume prompt
 
-> Read UI_RESTORATION.md and implement the next unchecked task. Make forward
-> edits, verify the change, update its checkbox and completion note, and create
-> one commit for that working change. Preserve the other recorded choices.
+> Read UI_RESTORATION.md and implement the next explicitly authorized unchecked
+> task. Make forward edits, verify the change, update its checkbox and completion
+> note, and create one commit for that working change. Preserve the other recorded
+> choices. Task 14 and the window-layout candidates remain deferred until chosen.
