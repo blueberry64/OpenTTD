@@ -35,6 +35,8 @@ enum GraphWidgets : WidgetID {
 	WID_GRAPH_DISABLE_CARGOES, ///< Disable cargoes button.
 	WID_GRAPH_MATRIX,          ///< Cargo list.
 	WID_GRAPH_MATRIX_SCROLLBAR,///< Cargo list scrollbar.
+	WID_GRAPH_PAYMENT_SPEED, ///< Speed used by the cargo payment graph.
+	WID_GRAPH_PAYMENT_DISTANCE, ///< Maximum distance shown by the cargo payment graph.
 
 	WID_GRAPH_RANGE_MATRIX, ///< Range list.
 	WID_GRAPH_SCALE_MATRIX, ///< Horizontal axis scale list.
