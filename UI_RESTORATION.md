@@ -539,6 +539,26 @@ These are deliberate scope decisions, not unfinished implementation tasks.
 | 27 | Keep current industry/cargo-chain window itself; task 16 removes its button from the individual industry view. |
 | Factory screenshot follow-up | Keep accepted/produced cargo icons in the industry information panel. |
 
+## Station waiting cargo follow-up
+
+Restored the classic Waiting heading and cargo rows, with icons on the left
+and quantities aligned to the right. Empty stations show "Waiting: Nothing";
+planned cargo reuses its existing "Station: Planned" label. No language strings
+are added or changed. The heading stays visible while cargo
+rows scroll. Existing expansion, transfer details and optional sort/group
+controls remain available. The cargo panel reserves one extra line for the
+heading, retaining four visible cargo rows at minimum size.
+
+Verification: Release build passed. Populated and empty stations, Planned
+mode, optional controls, reserved-cargo expansion, header clicks and vertical
+resizing checked in-game at 1x with the sprite font. Long scrolling lists,
+right-to-left languages and larger NewGRF cargo icons were not exercised.
+Translation follow-up: removed the two new heading strings and reused existing
+translated labels. Release rebuild and language generation passed with no
+missing-translation warnings in the build log. The reused Waiting and Nothing
+labels and the existing planned-cargo label were visually checked in-game. All language files match the existing
+committed versions.
+
 ## Verification and existing configurations
 
 Tasks 01–13 and 15–17 are complete. The Release build succeeds and all 99 CTest tests

@@ -1431,7 +1431,7 @@ struct StationViewWindow : public Window {
 		switch (widget) {
 			case WID_SV_WAITING:
 				fill.height = resize.height = this->line_height;
-				size.height = 4 * resize.height + padding.height;
+				size.height = 5 * resize.height + padding.height;
 				break;
 
 			case WID_SV_ACCEPT_RATING_LIST:
@@ -1495,6 +1495,17 @@ struct StationViewWindow : public Window {
 			/* Draw waiting cargo. */
 			NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_SV_WAITING);
 			Rect waiting_rect = nwi->GetCurrentRect().Shrink(WidgetDimensions::scaled.framerect);
+			/* Reuse translated labels so the classic heading needs no new language strings. */
+			std::string heading = GetString(this->current_mode == MODE_WAITING ? STR_GRAPH_INDUSTRY_RANGE_WAITING : STR_STATION_VIEW_PLANNED_STATION);
+			if (this->current_mode == MODE_WAITING) heading += ":";
+			DrawString(waiting_rect, heading, TextColour::Black);
+			if (cargo.GetNumChildren() == 0) {
+				Rect empty_rect = waiting_rect.Indent(GetStringBoundingBox(heading + " ").width, _current_text_dir == TD_RTL);
+				std::string empty = GetString(STR_JUST_NOTHING);
+				if (this->current_mode == MODE_PLANNED) empty = "(" + empty + ")";
+				DrawString(empty_rect, empty, TextColour::White);
+			}
+			waiting_rect.top += this->line_height;
 			this->DrawEntries(cargo, waiting_rect, pos, maxrows, 0);
 			scroll_to_row = INT_MAX;
 		}
@@ -1803,7 +1814,7 @@ struct StationViewWindow : public Window {
 
 		SpriteID sprite = CargoSpec::Get(cargo)->GetCargoIcon();
 
-		int x = _current_text_dir == TD_RTL ? r.left : r.right - num * width;
+		int x = _current_text_dir == TD_RTL ? r.right - num * width : r.left;
 		int y = CentreBounds(r.top, r.bottom, this->cargo_icon_size.height);
 		do {
 			DrawSprite(sprite, PAL_NONE, x, y);
@@ -1845,7 +1856,6 @@ struct StationViewWindow : public Window {
 				int y = r.top - pos * this->line_height;
 				if (this->groupings[column] == GR_CARGO) {
 					str = STR_STATION_VIEW_WAITING_CARGO;
-					this->DrawCargoIcons(cd.GetCargo(), cd.GetCount(), Rect(r.left + this->expand_shrink_width, y, r.right - this->expand_shrink_width, y + this->line_height - 1));
 				} else {
 					if (!auto_distributed) grouping = GR_SOURCE;
 					station = cd.GetStation();
@@ -1861,7 +1871,16 @@ struct StationViewWindow : public Window {
 				Rect text = r.Indent(column * WidgetDimensions::scaled.hsep_indent, rtl).Indent(this->expand_shrink_width, !rtl);
 				Rect shrink = r.WithWidth(this->expand_shrink_width, !rtl);
 
-				DrawString(text.left, text.right, y + text_y_offset, GetString(str, cargo, cd.GetCount(), station));
+				std::string label = GetString(str, cargo, cd.GetCount(), station);
+				if (grouping == GR_CARGO) {
+					/* The traditional cargo row has icons at the start and the amount at the end. */
+					int label_width = GetStringBoundingBox(label).width;
+					Rect icons = text.Indent(label_width + WidgetDimensions::scaled.hsep_normal, !rtl);
+					if (icons.Width() > 0) this->DrawCargoIcons(cargo, cd.GetCount(), icons.WithY(y, y + this->line_height - 1));
+					DrawString(text.left, text.right, y + text_y_offset, label, TextColour::FromString, AlignmentH::End);
+				} else {
+					DrawString(text.left, text.right, y + text_y_offset, label);
+				}
 
 				if (column < NUM_COLUMNS - 1) {
 					std::string_view sym;
@@ -1982,7 +2001,7 @@ struct StationViewWindow : public Window {
 
 		switch (widget) {
 			case WID_SV_WAITING:
-				this->HandleCargoWaitingClick(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SV_WAITING, WidgetDimensions::scaled.framerect.top) - this->vscroll->GetPosition());
+				this->HandleCargoWaitingClick(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SV_WAITING, WidgetDimensions::scaled.framerect.top + this->line_height) - this->vscroll->GetPosition());
 				break;
 
 			case WID_SV_CATCHMENT:
@@ -2165,7 +2184,7 @@ struct StationViewWindow : public Window {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_SV_WAITING, WidgetDimensions::scaled.framerect.Vertical());
+		this->vscroll->SetCapacityFromWidget(this, WID_SV_WAITING, WidgetDimensions::scaled.framerect.Vertical() + this->line_height);
 	}
 
 	/**
