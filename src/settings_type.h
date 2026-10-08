@@ -293,6 +293,7 @@ struct GUISettings {
 	uint16_t console_backlog_timeout; ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16_t console_backlog_length; ///< the minimum amount of items in the console backlog before items will be removed.
 
+	bool station_gui_show_cargo_controls; ///< show the grouping and sorting controls in station windows
 	uint8_t station_gui_group_order; ///< the order of grouping cargo entries in the station gui
 	uint8_t station_gui_sort_by; ///< sort cargo entries in the station gui by station name or amount
 	uint8_t station_gui_sort_order; ///< the sort order of entries in the station gui - ascending or descending

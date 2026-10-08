@@ -829,13 +829,17 @@ static constexpr std::initializer_list<NWidgetPart> _nested_station_view_widgets
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
 		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
-	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_TEXTBTN, Colours::Grey, WID_SV_GROUP), SetMinimalSize(81, 12), SetFill(1, 1), SetStringTip(STR_STATION_VIEW_GROUP),
-		NWidget(WWT_DROPDOWN, Colours::Grey, WID_SV_GROUP_BY), SetMinimalSize(168, 12), SetResize(1, 0), SetFill(0, 1), SetToolTip(STR_TOOLTIP_GROUP_ORDER),
-	EndContainer(),
-	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_SORT_ORDER), SetMinimalSize(81, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-		NWidget(WWT_DROPDOWN, Colours::Grey, WID_SV_SORT_BY), SetMinimalSize(168, 12), SetResize(1, 0), SetFill(0, 1), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
+	NWidget(NWID_SELECTION, Colours::Invalid, WID_SV_CARGO_CONTROLS_SEL),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_TEXTBTN, Colours::Grey, WID_SV_GROUP), SetMinimalSize(81, 12), SetFill(1, 1), SetStringTip(STR_STATION_VIEW_GROUP),
+				NWidget(WWT_DROPDOWN, Colours::Grey, WID_SV_GROUP_BY), SetMinimalSize(168, 12), SetResize(1, 0), SetFill(0, 1), SetToolTip(STR_TOOLTIP_GROUP_ORDER),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_SORT_ORDER), SetMinimalSize(81, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+				NWidget(WWT_DROPDOWN, Colours::Grey, WID_SV_SORT_BY), SetMinimalSize(168, 12), SetResize(1, 0), SetFill(0, 1), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
+			EndContainer(),
+		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, Colours::Grey, WID_SV_WAITING), SetMinimalSize(237, 44), SetResize(1, 10), SetScrollbar(WID_SV_SCROLLBAR), EndContainer(),
@@ -1359,6 +1363,7 @@ struct StationViewWindow : public Window {
 
 	void OnInit() override
 	{
+		this->GetWidget<NWidgetStacked>(WID_SV_CARGO_CONTROLS_SEL)->SetDisplayedPlane(_settings_client.gui.station_gui_show_cargo_controls ? 0 : SZSP_NONE);
 		this->cargo_icon_size = GetLargestCargoIconSize();
 		this->line_height = std::max<int>(GetCharacterHeight(FontSize::Normal), this->cargo_icon_size.height);
 		this->expand_shrink_width = std::max(GetCharacterWidth(FontSize::Normal, '-'), GetCharacterWidth(FontSize::Normal, '+'));
@@ -1479,7 +1484,7 @@ struct StationViewWindow : public Window {
 			}
 
 			/* Draw arrow pointing up/down for ascending/descending sorting */
-			this->DrawSortButton(WID_SV_SORT_ORDER, sort_orders[1] != SO_ASCENDING);
+			if (_settings_client.gui.station_gui_show_cargo_controls) this->DrawSortButton(WID_SV_SORT_ORDER, sort_orders[1] != SO_ASCENDING);
 
 			int pos = this->vscroll->GetPosition();
 
