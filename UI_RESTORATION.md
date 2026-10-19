@@ -559,6 +559,24 @@ missing-translation warnings in the build log. The reused Waiting and Nothing
 labels and the existing planned-cargo label were visually checked in-game. All language files match the existing
 committed versions.
 
+
+Horizontal resizing follow-up: hiding the cargo controls now uses a zero-height
+plane that still permits horizontal resizing. The previous non-resizable plane
+locked the whole window's width. Release build passed; an airport and a populated
+rail station were widened from 251 to 411 pixels and shrunk back in-game at 1x.
+Rail-station resizing was also checked with cargo controls visible, including
+vertical resizing. No language strings changed.
+
+
+Button-column follow-up: Rename/Location and Coverage/Ratings now share
+resizable columns, keeping their edges aligned at every width. The airport
+button uses the existing translated Close label and retains its persistent
+pressed state while closed; another click reopens the airport. The owner chose
+the fixed Close label rather than adding an Open translation string. Release
+build passed. Airport and populated rail-station columns were checked at
+minimum and wider sizes, including resizing; airport close/reopen and pressed
+state after releasing the mouse were checked in-game. No language files changed.
+
 ## Verification and existing configurations
 
 Tasks 01–13 and 15–17 are complete. The Release build succeeds and all 99 CTest tests

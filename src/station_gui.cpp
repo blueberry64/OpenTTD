@@ -847,20 +847,29 @@ static constexpr std::initializer_list<NWidgetPart> _nested_station_view_widgets
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::Grey, WID_SV_ACCEPT_RATING_LIST), SetMinimalSize(249, 23), SetResize(1, 0), EndContainer(),
 	NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_LOCATION), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_STATION_VIEW_CENTER_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_ACCEPTS_RATINGS), SetMinimalSize(46, 12), SetResize(1, 0), SetFill(1, 1),
-				SetStringTip(STR_STATION_VIEW_RATINGS_BUTTON, STR_STATION_VIEW_RATINGS_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_RENAME), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_STATION_VIEW_EDIT_TOOLTIP),
-		NWidget(NWID_SELECTION, Colours::Invalid, WID_SV_CLOSE_AIRPORT_SEL),
-			NWidget(WWT_TEXTBTN, Colours::Grey, WID_SV_CLOSE_AIRPORT), SetMinimalSize(45, 12), SetResize(1, 0), SetFill(1, 1),
-					SetStringTip(STR_STATION_VIEW_CLOSE_AIRPORT, STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP),
+		NWidget(NWID_VERTICAL),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_RENAME), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_STATION_VIEW_EDIT_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_LOCATION), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_STATION_VIEW_CENTER_TOOLTIP),
 		EndContainer(),
-		NWidget(WWT_TEXTBTN, Colours::Grey, WID_SV_CATCHMENT), SetMinimalSize(45, 12), SetResize(1, 0), SetFill(1, 1), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_TRAINS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_TRAIN, STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_ROADVEHS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_LORRY, STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_SHIPS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_PLANES),  SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_PLANE, STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP),
-		NWidget(WWT_RESIZEBOX, Colours::Grey),
+		NWidget(NWID_VERTICAL),
+			NWidget(WWT_TEXTBTN, Colours::Grey, WID_SV_CATCHMENT), SetMinimalSize(45, 12), SetResize(1, 0), SetFill(1, 1), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_ACCEPTS_RATINGS), SetMinimalSize(46, 12), SetResize(1, 0), SetFill(1, 1),
+					SetStringTip(STR_STATION_VIEW_RATINGS_BUTTON, STR_STATION_VIEW_RATINGS_TOOLTIP),
+		EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_SV_CLOSE_AIRPORT_SEL),
+				NWidget(WWT_TEXTBTN, Colours::Grey, WID_SV_CLOSE_AIRPORT), SetMinimalSize(0, 12), SetResize(1, 0), SetFill(1, 1),
+						SetStringTip(STR_GOAL_QUESTION_BUTTON_CLOSE, STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP),
+				NWidget(WWT_PANEL, Colours::Grey), SetMinimalSize(0, 12), SetResize(1, 0), SetFill(1, 1), EndContainer(),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_TRAINS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_TRAIN, STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_ROADVEHS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_LORRY, STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_SHIPS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SV_PLANES), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1), SetStringTip(STR_PLANE, STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP),
+				NWidget(WWT_RESIZEBOX, Colours::Grey),
+			EndContainer(),
+		EndContainer(),
 	EndContainer(),
 };
 
@@ -1347,7 +1356,7 @@ struct StationViewWindow : public Window {
 	StationViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
-		this->GetWidget<NWidgetStacked>(WID_SV_CLOSE_AIRPORT_SEL)->SetDisplayedPlane(Station::Get(window_number)->facilities.Test(StationFacility::Airport) ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_SV_CLOSE_AIRPORT_SEL)->SetDisplayedPlane(Station::Get(window_number)->facilities.Test(StationFacility::Airport) ? 0 : 1);
 		this->vscroll = this->GetScrollbar(WID_SV_SCROLLBAR);
 		/* Nested widget tree creation is done in two steps to ensure that this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS) exists in UpdateWidgetSize(). */
 		this->FinishInitNested(window_number);
@@ -1363,7 +1372,8 @@ struct StationViewWindow : public Window {
 
 	void OnInit() override
 	{
-		this->GetWidget<NWidgetStacked>(WID_SV_CARGO_CONTROLS_SEL)->SetDisplayedPlane(_settings_client.gui.station_gui_show_cargo_controls ? 0 : SZSP_NONE);
+		/* Hidden controls must still allow the window to resize horizontally. */
+		this->GetWidget<NWidgetStacked>(WID_SV_CARGO_CONTROLS_SEL)->SetDisplayedPlane(_settings_client.gui.station_gui_show_cargo_controls ? 0 : SZSP_HORIZONTAL);
 		this->cargo_icon_size = GetLargestCargoIconSize();
 		this->line_height = std::max<int>(GetCharacterHeight(FontSize::Normal), this->cargo_icon_size.height);
 		this->expand_shrink_width = std::max(GetCharacterWidth(FontSize::Normal, '-'), GetCharacterWidth(FontSize::Normal, '+'));
