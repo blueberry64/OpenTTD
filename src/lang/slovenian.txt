@@ -5082,7 +5082,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Podjetje {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Skupina {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

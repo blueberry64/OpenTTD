@@ -5651,10 +5651,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=Femenin}Mina
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Sense nom
-STR_SV_TRAIN_NAME                                               :{G=Masculin}Tren #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :{G=Masculin}Automòbil #{COMMA}
-STR_SV_SHIP_NAME                                                :{G=Masculin}Vaixell #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :{G=Masculin}Avió #{COMMA}
+STR_SV_TRAIN_NAME                                               :{G=Masculin}Tren {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :{G=Masculin}Automòbil {COMMA}
+STR_SV_SHIP_NAME                                                :{G=Masculin}Vaixell {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :{G=Masculin}Avió {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5963,7 +5963,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :{G=Femenin}(Companyia {COMMA})
 STR_FORMAT_GROUP_NAME                                           :{G=Masculin}Grup {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN}: {STRING}
 
 ###length 2

@@ -4562,10 +4562,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :قصب سكر
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :غير مسمى
-STR_SV_TRAIN_NAME                                               :قطار #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :عربة #{COMMA}
-STR_SV_SHIP_NAME                                                :سفينة #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :طائرة #{COMMA}
+STR_SV_TRAIN_NAME                                               :قطار {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :عربة {COMMA}
+STR_SV_SHIP_NAME                                                :سفينة {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :طائرة {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -4874,7 +4874,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :شركة {COMMA}
 STR_FORMAT_GROUP_NAME                                           :مجموعة{COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

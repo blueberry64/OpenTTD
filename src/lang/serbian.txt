@@ -5511,10 +5511,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=muški}Rudni
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Neimenovan
-STR_SV_TRAIN_NAME                                               :Voz #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Drumsko vozilo #{COMMA}
-STR_SV_SHIP_NAME                                                :Brod #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Letelica #{COMMA}
+STR_SV_TRAIN_NAME                                               :Voz {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Drumsko vozilo {COMMA}
+STR_SV_SHIP_NAME                                                :Brod {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Letelica {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5823,7 +5823,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Preduzeće {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Grupa {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

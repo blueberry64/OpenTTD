@@ -5653,10 +5653,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Tambang Gula
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Tanpa nama
-STR_SV_TRAIN_NAME                                               :Kereta #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Kendaraan Jalan Raya #{COMMA}
-STR_SV_SHIP_NAME                                                :Kapal #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Pesawat #{COMMA}
+STR_SV_TRAIN_NAME                                               :Kereta {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Kendaraan Jalan Raya {COMMA}
+STR_SV_SHIP_NAME                                                :Kapal {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Pesawat {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5965,7 +5965,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Perusahaan {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Kelompok {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 
 ###length 2

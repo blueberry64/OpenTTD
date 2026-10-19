@@ -5754,13 +5754,13 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=n}Ορυχε
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Χωρίς όνομα
-STR_SV_TRAIN_NAME                                               :{G=n}Τρένο #{COMMA}
+STR_SV_TRAIN_NAME                                               :{G=n}Τρένο {COMMA}
 STR_SV_TRAIN_NAME.geniki                                        :Τρένου {COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :{G=n}Οδικό όχημα #{COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :{G=n}Οδικό όχημα {COMMA}
 STR_SV_ROAD_VEHICLE_NAME.geniki                                 :Οδικού οχήματος {COMMA}
-STR_SV_SHIP_NAME                                                :{G=n}Πλοίο #{COMMA}
+STR_SV_SHIP_NAME                                                :{G=n}Πλοίο {COMMA}
 STR_SV_SHIP_NAME.geniki                                         :Πλοίου {COMMA}
-STR_SV_AIRCRAFT_NAME                                            :{G=n}Αεροσκάφος #{COMMA}
+STR_SV_AIRCRAFT_NAME                                            :{G=n}Αεροσκάφος {COMMA}
 STR_SV_AIRCRAFT_NAME.geniki                                     :Αεροσκάφους {COMMA}
 
 ###length 27
@@ -6070,7 +6070,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Εταιρεία {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Ομάδα {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 
 ###length 2

@@ -5400,7 +5400,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :({COMMA} חברה)
 STR_FORMAT_GROUP_NAME                                           :{COMMA} קבוצה
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING.gen} {0:TOWN}
 
 ###length 2

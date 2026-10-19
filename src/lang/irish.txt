@@ -4960,10 +4960,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Mianach Siúcra
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Gan ainm
-STR_SV_TRAIN_NAME                                               :Traein #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Feithicil Bóthair #{COMMA}
-STR_SV_SHIP_NAME                                                :Long #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Aerárthach #{COMMA}
+STR_SV_TRAIN_NAME                                               :Traein {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Feithicil Bóthair {COMMA}
+STR_SV_SHIP_NAME                                                :Long {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Aerárthach {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5272,7 +5272,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Cuideachta {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Grúpa {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 
 ###length 2

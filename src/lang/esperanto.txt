@@ -5759,10 +5759,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Sukerminejo
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Sennoma
-STR_SV_TRAIN_NAME                                               :Vagonaro #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Stratveturilo #{COMMA}
-STR_SV_SHIP_NAME                                                :Ŝipo #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Aviadilo #{COMMA}
+STR_SV_TRAIN_NAME                                               :Vagonaro {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Stratveturilo {COMMA}
+STR_SV_SHIP_NAME                                                :Ŝipo {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Aviadilo {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -6071,7 +6071,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Kompanio {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Group {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} de {0:TOWN}
 STR_FORMAT_INDUSTRY_NAME.n                                      :{1:STRING.n} de {0:TOWN}
 

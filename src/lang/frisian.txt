@@ -4290,9 +4290,9 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Sûkermyn
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Net neamt
-STR_SV_TRAIN_NAME                                               :Trein #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Lânfartúg #{COMMA}
-STR_SV_SHIP_NAME                                                :Skip #{COMMA}
+STR_SV_TRAIN_NAME                                               :Trein {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Lânfartúg {COMMA}
+STR_SV_SHIP_NAME                                                :Skip {COMMA}
 STR_SV_AIRCRAFT_NAME                                            :Fleantúch {COMMA}
 
 ###length 27

@@ -5425,10 +5425,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=f}Захар
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Неименуван
-STR_SV_TRAIN_NAME                                               :Влак #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Автомобил #{COMMA}
-STR_SV_SHIP_NAME                                                :Кораб #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Летателно средство #{COMMA}
+STR_SV_TRAIN_NAME                                               :Влак {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Автомобил {COMMA}
+STR_SV_SHIP_NAME                                                :Кораб {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Летателно средство {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5737,7 +5737,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Компания {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Група {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 
 ###length 2

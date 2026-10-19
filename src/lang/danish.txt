@@ -5653,10 +5653,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Sukkermine
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Ikke navngivet
-STR_SV_TRAIN_NAME                                               :Tog #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Vejkøretøj #{COMMA}
-STR_SV_SHIP_NAME                                                :Skib #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Fly #{COMMA}
+STR_SV_TRAIN_NAME                                               :Tog {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Vejkøretøj {COMMA}
+STR_SV_SHIP_NAME                                                :Skib {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Fly {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5965,7 +5965,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Firma {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Gruppe {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

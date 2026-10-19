@@ -5661,10 +5661,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Şeker Madeni
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :İsimsiz
-STR_SV_TRAIN_NAME                                               :Tren #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Karayolu Taşıtı #{COMMA}
-STR_SV_SHIP_NAME                                                :Gemi #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Uçak #{COMMA}
+STR_SV_TRAIN_NAME                                               :Tren {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Karayolu Taşıtı {COMMA}
+STR_SV_SHIP_NAME                                                :Gemi {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Uçak {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5973,7 +5973,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Company {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Grup {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING.tamlanan}
 
 ###length 2

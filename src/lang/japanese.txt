@@ -5142,10 +5142,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :砂糖鉱山
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :[未命名]
-STR_SV_TRAIN_NAME                                               :列車 #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :車両 #{COMMA}
-STR_SV_SHIP_NAME                                                :船舶 #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :航空機 #{COMMA}
+STR_SV_TRAIN_NAME                                               :列車 {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :車両 {COMMA}
+STR_SV_SHIP_NAME                                                :船舶 {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :航空機 {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5454,7 +5454,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(会社{COMMA})
 STR_FORMAT_GROUP_NAME                                           :グループ {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN}{STRING}
 
 ###length 2
