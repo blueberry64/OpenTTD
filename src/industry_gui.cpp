@@ -18,6 +18,9 @@
 #include "command_func.h"
 #include "viewport_func.h"
 #include "industry.h"
+#include "sprite.h"
+#include "landscape.h"
+#include "table/industry_land.h"
 #include "town.h"
 #include "cargo_type.h"
 #include "cheat_type.h"
@@ -262,9 +265,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_industry_widge
 		NWidget(WWT_CLOSEBOX, Colours::DarkGreen),
 		NWidget(WWT_CAPTION, Colours::DarkGreen), SetStringTip(STR_FUND_INDUSTRY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, Colours::DarkGreen),
-		NWidget(WWT_DEFSIZEBOX, Colours::DarkGreen),
 		NWidget(WWT_STICKYBOX, Colours::DarkGreen),
 	EndContainer(),
+	NWidget(WWT_PANEL, Colours::DarkGreen),
 	NWidget(NWID_SELECTION, Colours::DarkGreen, WID_DPI_SCENARIO_EDITOR_PANE),
 		NWidget(NWID_VERTICAL),
 			NWidget(WWT_TEXTBTN, Colours::DarkGreen, WID_DPI_CREATE_RANDOM_INDUSTRIES_WIDGET), SetMinimalSize(0, 12), SetFill(1, 0), SetResize(1, 0),
@@ -273,9 +276,19 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_industry_widge
 					SetStringTip(STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES, STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
+	NWidget(WWT_DROPDOWN, Colours::DarkGreen, WID_DPI_INDUSTRY_DROPDOWN), SetMinimalSize(240, 0), SetFill(1, 0), SetToolTip(STR_FUND_INDUSTRY_SELECTION_TOOLTIP),
+	NWidget(WWT_EMPTY, Colours::Invalid, WID_DPI_PREVIEW), SetMinimalSize(240, 150), SetFill(1, 0),
+	NWidget(WWT_PANEL, Colours::DarkGreen),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_MATRIX, Colours::DarkGreen, WID_DPI_MATRIX_WIDGET), SetMatrixDataTip(1, 0, STR_FUND_INDUSTRY_SELECTION_TOOLTIP), SetFill(1, 0), SetResize(1, 1), SetScrollbar(WID_DPI_SCROLLBAR),
-		NWidget(NWID_VSCROLLBAR, Colours::DarkGreen, WID_DPI_SCROLLBAR),
+		NWidget(WWT_PUSHARROWBTN, Colours::DarkGreen, WID_DPI_LAYOUT_PREV), SetMinimalSize(12, 12), SetArrowWidgetTypeTip(ArrowWidgetType::Decrease),
+		NWidget(WWT_LABEL, Colours::Invalid, WID_DPI_LAYOUT_LABEL), SetMinimalSize(0, 14), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_FUND_INDUSTRY_LAYOUT),
+		NWidget(WWT_PUSHARROWBTN, Colours::DarkGreen, WID_DPI_LAYOUT_NEXT), SetMinimalSize(12, 12), SetArrowWidgetTypeTip(ArrowWidgetType::Increase),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PUSHARROWBTN, Colours::DarkGreen, WID_DPI_COLOUR_PREV), SetMinimalSize(12, 12), SetArrowWidgetTypeTip(ArrowWidgetType::Decrease),
+		NWidget(WWT_LABEL, Colours::Invalid, WID_DPI_COLOUR_LABEL), SetMinimalSize(0, 14), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_FUND_INDUSTRY_COLOUR),
+		NWidget(WWT_PUSHARROWBTN, Colours::DarkGreen, WID_DPI_COLOUR_NEXT), SetMinimalSize(12, 12), SetArrowWidgetTypeTip(ArrowWidgetType::Increase),
+	EndContainer(),
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::DarkGreen, WID_DPI_INFOPANEL), SetResize(1, 0),
 	EndContainer(),
@@ -283,13 +296,13 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_industry_widge
 		NWidget(WWT_TEXTBTN, Colours::DarkGreen, WID_DPI_DISPLAY_WIDGET), SetFill(1, 0), SetResize(1, 0),
 				SetStringTip(STR_INDUSTRY_DISPLAY_CHAIN, STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP),
 		NWidget(WWT_TEXTBTN, Colours::DarkGreen, WID_DPI_FUND_WIDGET), SetFill(1, 0), SetResize(1, 0),
-		NWidget(WWT_RESIZEBOX, Colours::DarkGreen),
+	EndContainer(),
 	EndContainer(),
 };
 
 /** Window definition of the dynamic place industries gui */
 static WindowDesc _build_industry_desc(
-	WindowPosition::Automatic, "build_industry", 170, 212,
+	WindowPosition::Automatic, "build_industry_picker", 0, 0,
 	WindowClass::BuildIndustry, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_build_industry_widgets
@@ -299,13 +312,56 @@ static WindowDesc _build_industry_desc(
 class BuildIndustryWindow : public Window {
 	IndustryType selected_type = IT_INVALID; ///< industry corresponding to the above index
 	std::vector<IndustryType> list{}; ///< List of industries.
+	size_t selected_layout = 0; ///< Exact original industry layout.
+	uint8_t selected_colour = 0; ///< Original industry palette.
 	bool enabled = false; ///< Availability state of the selected industry.
-	Scrollbar *vscroll = nullptr;
-	Dimension legend{}; ///< Dimension of the legend 'blob'.
-	GUIBadgeClasses badge_classes{};
 
 	/** The largest allowed minimum-width of the window, given in line heights */
 	static const int MAX_MINWIDTH_LINEHEIGHTS = 20;
+
+	bool HasPreview() const
+	{
+		return this->selected_type != IT_INVALID && this->selected_layout < GetIndustrySpec(this->selected_type)->layouts.size() && IndustryLayoutUsesOriginalGraphics(GetIndustrySpec(this->selected_type)->layouts[this->selected_layout]);
+	}
+
+	/** Bounds of the completed original sprites at the current GUI zoom. */
+	Rect PreviewBounds(const IndustryTileLayout &tiles) const
+	{
+		Rect bounds{0, 0, 0, 0};
+		for (const auto &tile : tiles) {
+			if (tile.gfx == GFX_WATERTILE_SPECIALCHECK) continue;
+			const auto &data = _industry_draw_tile_data[GetTranslatedIndustryTileID(tile.gfx) * 4 + INDUSTRY_COMPLETED];
+			Point pt = RemapCoords(tile.ti.x * TILE_SIZE, tile.ti.y * TILE_SIZE, 0);
+			for (bool building : {false, true}) {
+				SpriteID sprite = building ? data.building.sprite : data.ground.sprite;
+				if (sprite == 0) continue;
+				Point origin = building ? RemapCoords(data.origin.x, data.origin.y, data.origin.z) : Point{0, 0};
+				Point offset;
+				Dimension size = GetSpriteSize(sprite, &offset);
+				int x = UnScaleGUI(pt.x + origin.x) + offset.x;
+				int y = UnScaleGUI(pt.y + origin.y) + offset.y;
+				bounds.left = std::min(bounds.left, x);
+				bounds.top = std::min(bounds.top, y);
+				bounds.right = std::max(bounds.right, UnScaleGUI(pt.x + origin.x) + static_cast<int>(size.width));
+				bounds.bottom = std::max(bounds.bottom, UnScaleGUI(pt.y + origin.y) + static_cast<int>(size.height));
+			}
+		}
+		return bounds;
+	}
+
+	void UpdateFootprint()
+	{
+		if (_thd.GetCallbackWnd() != this) return;
+		int width = 1, height = 1;
+		if (this->HasPreview()) {
+			for (const auto &tile : GetIndustrySpec(this->selected_type)->layouts[this->selected_layout]) {
+				if (tile.gfx == GFX_WATERTILE_SPECIALCHECK) continue;
+				width = std::max(width, tile.ti.x + 1);
+				height = std::max(height, tile.ti.y + 1);
+			}
+		}
+		SetTileSelectSize(width, height);
+	}
 
 	void UpdateAvailability()
 	{
@@ -340,13 +396,13 @@ class BuildIndustryWindow : public Window {
 		if (this->selected_type == IT_INVALID && !this->list.empty()) this->selected_type = this->list[0];
 
 		this->UpdateAvailability();
-
-		this->vscroll->SetCount(this->list.size());
 	}
 
 	/** Update status of the fund and display-chain widgets. */
 	void SetButtons()
 	{
+		for (WidgetID widget : {WID_DPI_LAYOUT_PREV, WID_DPI_LAYOUT_NEXT}) this->SetWidgetDisabledState(widget, this->selected_type == IT_INVALID || GetIndustrySpec(this->selected_type)->layouts.size() < 2);
+		for (WidgetID widget : {WID_DPI_COLOUR_PREV, WID_DPI_COLOUR_NEXT}) this->SetWidgetDisabledState(widget, !this->HasPreview());
 		this->SetWidgetDisabledState(WID_DPI_FUND_WIDGET, this->selected_type != IT_INVALID && !this->enabled);
 		this->SetWidgetDisabledState(WID_DPI_DISPLAY_WIDGET, this->selected_type == IT_INVALID && this->enabled);
 	}
@@ -385,7 +441,6 @@ public:
 	BuildIndustryWindow() : Window(_build_industry_desc)
 	{
 		this->CreateNestedTree();
-		this->vscroll = this->GetScrollbar(WID_DPI_SCROLLBAR);
 		/* Show scenario editor tools in editor. */
 		if (_game_mode != GameMode::Editor) {
 			this->GetWidget<NWidgetStacked>(WID_DPI_SCENARIO_EDITOR_PANE)->SetDisplayedPlane(SZSP_HORIZONTAL);
@@ -397,30 +452,31 @@ public:
 
 	void OnInit() override
 	{
-		this->badge_classes = GUIBadgeClasses{GrfSpecFeature::Industries};
-
-		/* Width of the legend blob -- slightly larger than the smallmap legend blob. */
-		this->legend.height = GetCharacterHeight(FontSize::Small);
-		this->legend.width = this->legend.height * 9 / 6;
-
 		this->SetupArrays();
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
-			case WID_DPI_MATRIX_WIDGET: {
-				Dimension count = GetStringBoundingBox(GetString(STR_JUST_COMMA, GetParamMaxDigits(4)), FontSize::Small);
-				Dimension d{};
-				for (const auto &indtype : this->list) {
-					d = maxdim(d, GetStringBoundingBox(GetIndustrySpec(indtype)->name));
+			case WID_DPI_PREVIEW:
+				for (auto type : this->list) {
+					const auto *spec = GetIndustrySpec(type);
+					for (const auto &layout : spec->layouts) {
+						if (!IndustryLayoutUsesOriginalGraphics(layout)) continue;
+						Rect bounds = this->PreviewBounds(layout);
+						size.width = std::max(size.width, bounds.Width() + padding.width);
+						size.height = std::max(size.height, bounds.Height() + padding.height);
+					}
 				}
-				fill.height = resize.height = std::max<uint>({this->legend.height, d.height, count.height}) + padding.height;
-				d.width += this->badge_classes.GetTotalColumnsWidth() + this->legend.width + WidgetDimensions::scaled.hsep_wide + WidgetDimensions::scaled.hsep_normal + count.width + padding.width;
-				d.height = 5 * resize.height;
-				size = maxdim(size, d);
 				break;
-			}
+			case WID_DPI_INDUSTRY_DROPDOWN:
+				for (auto type : this->list) {
+					Dimension d = GetStringBoundingBox(GetIndustrySpec(type)->name);
+					d.width += padding.width;
+					d.height += padding.height;
+					size = maxdim(size, d);
+				}
+				break;
 
 			case WID_DPI_INFOPANEL: {
 				/* Extra line for cost outside of editor. */
@@ -482,6 +538,12 @@ public:
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		switch (widget) {
+			case WID_DPI_INDUSTRY_DROPDOWN:
+				return this->selected_type == IT_INVALID ? std::string{} : GetString(GetIndustrySpec(this->selected_type)->name);
+			case WID_DPI_LAYOUT_LABEL:
+				return this->HasPreview() ? GetString(STR_FUND_INDUSTRY_LAYOUT, this->selected_layout + 1, GetIndustrySpec(this->selected_type)->layouts.size()) : std::string{};
+			case WID_DPI_COLOUR_LABEL:
+				return this->HasPreview() ? GetString(STR_FUND_INDUSTRY_COLOUR, STR_COLOUR_DARK_BLUE + this->selected_colour) : std::string{};
 			case WID_DPI_FUND_WIDGET:
 				/* Raw industries might be prospected. Show this fact by changing the string
 				 * In Editor, you just build, while ingame, or you fund or you prospect */
@@ -503,42 +565,30 @@ public:
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
-			case WID_DPI_MATRIX_WIDGET: {
-				bool rtl = _current_text_dir == TD_RTL;
-				Rect text = r.WithHeight(this->resize.step_height).Shrink(WidgetDimensions::scaled.matrix);
-				Rect icon = text.WithWidth(this->legend.width, rtl);
-				text = text.Indent(this->legend.width + WidgetDimensions::scaled.hsep_wide, rtl);
-
-				/* Vertical offset for legend icon. */
-				icon.top    = r.top + (this->resize.step_height - this->legend.height + 1) / 2;
-				icon.bottom = icon.top + this->legend.height - 1;
-
-				auto badge_column_widths = badge_classes.GetColumnWidths();
-
-				auto [first, last] = this->vscroll->GetVisibleRangeIterators(this->list);
-				for (auto it = first; it != last; ++it) {
-					IndustryType type = *it;
-					bool selected = this->selected_type == type;
-					const IndustrySpec *indsp = GetIndustrySpec(type);
-
-					Rect tr = text;
-					if (badge_column_widths.size() >= 1 && badge_column_widths[0] > 0) {
-						DrawBadgeColumn(tr.WithWidth(badge_column_widths[0], rtl), 0, this->badge_classes, indsp->badges, GrfSpecFeature::Industries, std::nullopt, PAL_NONE);
-						tr = tr.Indent(badge_column_widths[0], rtl);
+			case WID_DPI_PREVIEW: {
+				if (!this->HasPreview()) {
+					DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), STR_FUND_INDUSTRY_PREVIEW_UNAVAILABLE, TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle});
+					break;
+				}
+				/* The panel is sized for every original layout, so draw in screen coordinates
+				 * like the airport picker, without changing the drawing context. */
+				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
+				auto tiles = GetIndustrySpec(this->selected_type)->layouts[this->selected_layout];
+				std::erase_if(tiles, [](const auto &t) { return t.gfx == GFX_WATERTILE_SPECIALCHECK; });
+				std::stable_sort(tiles.begin(), tiles.end(), [](const auto &a, const auto &b) { return a.ti.x + a.ti.y < b.ti.x + b.ti.y; });
+				Rect bounds = this->PreviewBounds(tiles);
+				int x = ir.left + (ir.Width() - bounds.Width()) / 2 - bounds.left;
+				int y = ir.top + (ir.Height() - bounds.Height()) / 2 - bounds.top;
+				PaletteID palette = GetColourPalette(static_cast<Colours>(this->selected_colour));
+				for (bool buildings : {false, true}) for (const auto &tile : tiles) {
+					const auto &data = _industry_draw_tile_data[GetTranslatedIndustryTileID(tile.gfx) * 4 + INDUSTRY_COMPLETED];
+					Point pt = RemapCoords(tile.ti.x * TILE_SIZE, tile.ti.y * TILE_SIZE, 0);
+					if (!buildings) {
+						DrawSprite(data.ground.sprite, GroundSpritePaletteTransform(data.ground.sprite, data.ground.pal, palette), x + UnScaleGUI(pt.x), y + UnScaleGUI(pt.y));
+					} else if (data.building.sprite != 0) {
+						Point offset = RemapCoords(data.origin.x, data.origin.y, data.origin.z);
+						DrawSprite(data.building.sprite, SpriteLayoutPaletteTransform(data.building.sprite, data.building.pal, palette), x + UnScaleGUI(pt.x + offset.x), y + UnScaleGUI(pt.y + offset.y));
 					}
-					if (badge_column_widths.size() >= 2 && badge_column_widths[1] > 0) {
-						DrawBadgeColumn(tr.WithWidth(badge_column_widths[1], !rtl), 0, this->badge_classes, indsp->badges, GrfSpecFeature::Industries, std::nullopt, PAL_NONE);
-						tr = tr.Indent(badge_column_widths[1], !rtl);
-					}
-
-					/* Draw the name of the industry in white is selected, otherwise, in orange */
-					DrawString(tr, indsp->name, selected ? TextColour::White : TextColour::Orange);
-					GfxFillRect(icon, selected ? PC_WHITE : PC_BLACK);
-					GfxFillRect(icon.Shrink(WidgetDimensions::scaled.bevel), indsp->map_colour);
-					DrawString(tr, GetString(STR_JUST_COMMA, Industry::GetIndustryTypeCount(type)), TextColour::Black, AlignmentH::End, false, FontSize::Small);
-
-					text = text.Translate(0, this->resize.step_height);
-					icon = icon.Translate(0, this->resize.step_height);
 				}
 				break;
 			}
@@ -629,6 +679,22 @@ public:
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
+			case WID_DPI_LAYOUT_PREV:
+			case WID_DPI_LAYOUT_NEXT:
+			case WID_DPI_COLOUR_PREV:
+			case WID_DPI_COLOUR_NEXT:
+				if (this->selected_type == IT_INVALID) break;
+				if (widget == WID_DPI_LAYOUT_PREV || widget == WID_DPI_LAYOUT_NEXT) {
+					size_t count = GetIndustrySpec(this->selected_type)->layouts.size();
+					this->selected_layout = (this->selected_layout + (widget == WID_DPI_LAYOUT_NEXT ? 1 : count - 1)) % count;
+				} else {
+					if (!this->HasPreview()) break;
+					this->selected_colour = (this->selected_colour + (widget == WID_DPI_COLOUR_NEXT ? 1 : 15)) % 16;
+				}
+				this->UpdateFootprint();
+				this->SetButtons();
+				this->SetDirty();
+				break;
 			case WID_DPI_CREATE_RANDOM_INDUSTRIES_WIDGET: {
 				assert(_game_mode == GameMode::Editor);
 				this->HandleButtonClick(WID_DPI_CREATE_RANDOM_INDUSTRIES_WIDGET);
@@ -649,26 +715,10 @@ public:
 				break;
 			}
 
-			case WID_DPI_MATRIX_WIDGET: {
-				auto it = this->vscroll->GetScrolledItemFromWidget(this->list, pt.y, this, WID_DPI_MATRIX_WIDGET);
-				if (it != this->list.end()) { // Is it within the boundaries of available data?
-					this->selected_type = *it;
-					this->UpdateAvailability();
-
-					const IndustrySpec *indsp = GetIndustrySpec(this->selected_type);
-
-					this->SetDirty();
-
-					if (_thd.GetCallbackWnd() == this &&
-							((_game_mode != GameMode::Editor && _settings_game.construction.raw_industry_construction == 2 && indsp != nullptr && indsp->IsRawIndustry()) || !this->enabled)) {
-						/* Reset the button state if going to prospecting or "build many industries" */
-						this->RaiseButtons();
-						ResetObjectToPlace();
-					}
-
-					this->SetButtons();
-					if (this->enabled && click_count > 1) this->OnClick(pt, WID_DPI_FUND_WIDGET, 1);
-				}
+			case WID_DPI_INDUSTRY_DROPDOWN: {
+				DropDownList items;
+				for (auto type : this->list) items.push_back(MakeDropDownListStringItem(GetIndustrySpec(type)->name, type));
+				ShowDropDownList(this, std::move(items), this->selected_type, widget);
 				break;
 			}
 
@@ -679,10 +729,11 @@ public:
 			case WID_DPI_FUND_WIDGET: {
 				if (this->selected_type != IT_INVALID) {
 					if (_game_mode != GameMode::Editor && _settings_game.construction.raw_industry_construction == 2 && GetIndustrySpec(this->selected_type)->IsRawIndustry()) {
-						Command<Commands::BuildIndustry>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, TileIndex{}, this->selected_type, 0, false, InteractiveRandom());
+						Command<Commands::BuildIndustry>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, TileIndex{}, this->selected_type, 0, false, InteractiveRandom(), 16);
 						this->HandleButtonClick(WID_DPI_FUND_WIDGET);
 					} else {
 						HandlePlacePushButton(this, WID_DPI_FUND_WIDGET, SPR_CURSOR_INDUSTRY, HT_RECT);
+						this->UpdateFootprint();
 					}
 				}
 				break;
@@ -690,10 +741,18 @@ public:
 		}
 	}
 
-	void OnResize() override
+	void OnDropdownSelect(WidgetID widget, int index, int) override
 	{
-		/* Adjust the number of items in the matrix depending of the resize */
-		this->vscroll->SetCapacityFromWidget(this, WID_DPI_MATRIX_WIDGET);
+		if (widget != WID_DPI_INDUSTRY_DROPDOWN) return;
+		if (std::find(this->list.begin(), this->list.end(), index) == this->list.end()) return;
+		this->selected_type = static_cast<IndustryType>(index);
+		this->selected_layout = 0;
+		this->UpdateAvailability();
+		const auto *spec = GetIndustrySpec(this->selected_type);
+		if (_thd.GetCallbackWnd() == this && (!this->enabled || (_game_mode != GameMode::Editor && _settings_game.construction.raw_industry_construction == 2 && spec->IsRawIndustry()))) ResetObjectToPlace();
+		this->UpdateFootprint();
+		this->SetButtons();
+		this->SetDirty();
 	}
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
@@ -701,8 +760,9 @@ public:
 		bool success = true;
 		/* We do not need to protect ourselves against "Random Many Industries" in this mode */
 		const IndustrySpec *indsp = GetIndustrySpec(this->selected_type);
-		uint32_t seed = InteractiveRandom();
-		uint32_t layout_index = InteractiveRandomRange((uint32_t)indsp->layouts.size());
+		uint32_t seed = this->HasPreview() ? 0 : InteractiveRandom();
+		uint32_t layout_index = this->HasPreview() ? this->selected_layout : InteractiveRandomRange((uint32_t)indsp->layouts.size());
+		uint8_t colour = this->HasPreview() ? this->selected_colour : 16;
 
 		if (_game_mode == GameMode::Editor) {
 			/* Show error if no town exists at all */
@@ -716,9 +776,9 @@ public:
 			AutoRestoreBackup backup_generating_world(_generating_world, true);
 			AutoRestoreBackup backup_ignore_industry_restritions(_ignore_industry_restrictions, true);
 
-			Command<Commands::BuildIndustry>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed);
+			Command<Commands::BuildIndustry>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed, colour);
 		} else {
-			success = Command<Commands::BuildIndustry>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed);
+			success = Command<Commands::BuildIndustry>::Post(STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY, tile, this->selected_type, layout_index, false, seed, colour);
 		}
 
 		/* If an industry has been built, just reset the cursor and the system */

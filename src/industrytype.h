@@ -238,4 +238,14 @@ inline IndustryGfx GetTranslatedIndustryTileID(IndustryGfx gfx)
 	return it->grf_prop.override_id == INVALID_INDUSTRYTILE ? gfx : it->grf_prop.override_id;
 }
 
+/** Whether a layout can be drawn with the original industry tile sprite table.
+ * NewGRFs that only change industry rules or rearrange original tiles are supported.
+ */
+inline bool IndustryLayoutUsesOriginalGraphics(const IndustryTileLayout &layout)
+{
+	return std::all_of(layout.begin(), layout.end(), [](const auto &tile) {
+		return tile.gfx == GFX_WATERTILE_SPECIALCHECK || GetTranslatedIndustryTileID(tile.gfx) < NEW_INDUSTRYTILEOFFSET;
+	});
+}
+
 #endif /* INDUSTRYTYPE_H */

@@ -21,6 +21,7 @@ This is my personal fork of OpenTTD with various tweaks to my liking. It's maint
 - Remove coverage and graph buttons from town windows.
 - Restore compact, fixed-height industry information and a half-width Location button.
 - Remove chain and graph buttons from industry windows.
+- Add an industry picker with a dropdown, layout preview, and exact layout and colour selection for industries using original graphics.
 - Remove the Rename button from depot windows.
 - Move small map controls below the map.
 - Remove text search from dropdown menus.
