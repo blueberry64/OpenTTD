@@ -97,6 +97,8 @@ public:
 };
 bool FiosItemSorter(const FiosItem &a, const FiosItem &b);
 bool FiosItemNameSorter(const FiosItem &a, const FiosItem &b);
+bool FiosItemDateNameSorter(const FiosItem &a, const FiosItem &b);
+std::string FiosMakeDateSortKey(std::string_view title);
 bool FiosItemModificationDateSorter(const FiosItem &a, const FiosItem &b);
 
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);

@@ -60,7 +60,7 @@ bool FiosItemSorter(const FiosItem &a, const FiosItem &b)
 		case SavegameSorter::Date:
 			return _savegame_sorter_ascending ? FiosItemModificationDateSorter(a, b) : FiosItemModificationDateSorter(b, a);
 		case SavegameSorter::Name:
-			return _savegame_sorter_ascending ? FiosItemNameSorter(a, b) : FiosItemNameSorter(b, a);
+			return _savegame_sorter_ascending ? FiosItemDateNameSorter(a, b) : FiosItemDateNameSorter(b, a);
 		default:
 			NOT_REACHED();
 	}
