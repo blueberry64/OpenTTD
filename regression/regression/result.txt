@@ -10551,7 +10551,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   --Accounting--
     GetCosts():         -5947
     Should be:          -5947
-  GetName():            Road Vehicle #1
+  GetName():            Road Vehicle 1
   SetName():            true
   GetName():            MyVehicleName
   CloneVehicle():       13
@@ -10915,7 +10915,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   LowerTile():          true
   RaiseTile():          true
   LowerTile():          true
-  GetCosts():           2778
+  GetCosts():           2478
   LowerTile():          false
   LowerTile():          true
   RaiseTile():          false
@@ -10923,7 +10923,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   LowerTile():          false
   RaiseTile():          true
   LowerTile():          true
-  GetCosts():           5701
+  GetCosts():           5551
   RaiseTile():          true
   LowerTile():          true
   GetCosts():           16055
@@ -10938,7 +10938,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetCosts():           9628
   LevelTiles():         true
   LevelTiles():         true
-  GetCosts():           288029
+  GetCosts():           286079
   LowerTile():          false
   RaiseTile():          true
   RaiseTile():          false
