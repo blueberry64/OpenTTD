@@ -1,5 +1,35 @@
 # OpenTTD
 
+This is my personal fork of OpenTTD with various tweaks to my liking. It's maintained for my own use, so changes are driven by personal preference rather than a roadmap.
+
+## Changes from upstream
+
+- Default to traditional toolbar menu selection.
+- Default to the traditional sprite font and 100% interface scaling.
+- Default to immediate viewport scrolling instead of smooth scrolling.
+- Default to the latest available railway type.
+- Restore the classic main menu layout and climate pictures.
+- Remove the tram construction button from the main toolbar.
+- Restore text Location and Rename buttons and their classic placement in object windows.
+- Restore the eye button for locating vehicles.
+- Show all signal types, with semaphores hidden by default and an option to show them.
+- Restore cargo filter buttons in the station list.
+- Restore the classic waiting cargo display in station windows.
+- Hide station cargo grouping and sorting controls by default, with an option to show them.
+- Arrange station buttons in two rows, with Rename, Coverage, and airport closure controls above Location, Ratings, and Vehicles.
+- Restore the classic town button order and proportions.
+- Remove coverage and graph buttons from town windows.
+- Restore compact, fixed-height industry information and a half-width Location button.
+- Remove chain and graph buttons from industry windows.
+- Add an industry picker with a dropdown, layout preview, and exact layout and colour selection for industries using original graphics.
+- Remove the Rename button from depot windows.
+- Move small map controls below the map.
+- Remove text search from dropdown menus.
+- Remove the `#` prefix from vehicle numbers.
+- Plot cargo payments against distance with adjustable speed and distance range.
+- Stop terraforming from randomly creating rocks when lowering land.
+- Sort save/load titles containing dates such as "24th Oct 1943" chronologically within name order.
+
 ## Table of contents
 
 - 1.0) [About](#10-about)

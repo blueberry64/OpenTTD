@@ -4255,10 +4255,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :معدن شکر
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :بی نام
-STR_SV_TRAIN_NAME                                               :قطار #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :خودرو جاده ای #{COMMA}
-STR_SV_SHIP_NAME                                                :کشتی #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :هواپیما #{COMMA}
+STR_SV_TRAIN_NAME                                               :قطار {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :خودرو جاده ای {COMMA}
+STR_SV_SHIP_NAME                                                :کشتی {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :هواپیما {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}

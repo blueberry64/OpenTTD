@@ -230,6 +230,12 @@ static void PlaceRail_Station(TileIndex tile)
 	}
 }
 
+/** Default signal variant for placement without a picker and picker initialization. */
+static SignalVariant GetDefaultSignalVariant()
+{
+	return !_settings_client.gui.hide_semaphores && TimerGameCalendar::year < _settings_client.gui.semaphore_build_before ? SignalVariant::Semaphore : SignalVariant::Electric;
+}
+
 /**
  * Build a new signal or edit/remove a present signal, use CmdBuildSingleSignal() or CmdRemoveSingleSignal() in rail_cmd.cpp
  *
@@ -260,7 +266,7 @@ static void GenericPlaceSignals(TileIndex tile)
 
 		/* Start with the least restrictive case: the player wants to cycle through all signals they can see. */
 		if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL) {
-			cycle_start = _settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL ? SignalType::Block : SignalType::Path;
+			cycle_start = SignalType::Block;
 			cycle_end = SignalType::PathOneWay;
 		} else {
 			/* Only cycle through signals of the same group (block or path) as the current signal on the tile. */
@@ -280,7 +286,7 @@ static void GenericPlaceSignals(TileIndex tile)
 			Command<Commands::BuildSignal>::Post(_convert_signal_button ? STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE : STR_ERROR_CAN_T_BUILD_SIGNALS_HERE, CcPlaySound_CONSTRUCTION_RAIL,
 				tile, track, _cur_signal_type, _cur_signal_variant, _convert_signal_button, false, _ctrl_pressed, cycle_start, cycle_end, 0, 0);
 		} else {
-			SignalVariant sigvar = TimerGameCalendar::year < _settings_client.gui.semaphore_build_before ? SignalVariant::Semaphore : SignalVariant::Electric;
+			SignalVariant sigvar = GetDefaultSignalVariant();
 			Command<Commands::BuildSignal>::Post(STR_ERROR_CAN_T_BUILD_SIGNALS_HERE, CcPlaySound_CONSTRUCTION_RAIL,
 				tile, track, _settings_client.gui.default_signal_type, sigvar, false, false, _ctrl_pressed, cycle_start, cycle_end, 0, 0);
 
@@ -433,7 +439,7 @@ static void HandleAutoSignalPlacement()
 	} else {
 		bool sig_gui = FindWindowById(WindowClass::BuildSignal, 0) != nullptr;
 		SignalType sigtype = sig_gui ? _cur_signal_type : _settings_client.gui.default_signal_type;
-		SignalVariant sigvar = sig_gui ? _cur_signal_variant : (TimerGameCalendar::year < _settings_client.gui.semaphore_build_before ? SignalVariant::Semaphore : SignalVariant::Electric);
+		SignalVariant sigvar = sig_gui ? _cur_signal_variant : GetDefaultSignalVariant();
 		Command<Commands::BuildSignalLong>::Post(STR_ERROR_CAN_T_BUILD_SIGNALS_HERE, CcPlaySound_CONSTRUCTION_RAIL,
 				TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), track, sigtype, sigvar, false, _ctrl_pressed, !_settings_client.gui.drag_signals_fixed_distance, _settings_client.gui.drag_signals_density);
 	}
@@ -1541,13 +1547,12 @@ private:
 		DrawSprite(image, PAL_NONE, x, y);
 	}
 
-	/** Show or hide buttons for non-path signals in the signal GUI */
+	/** Hide semaphore rows while leaving every signal type available. */
 	void SetSignalUIMode()
 	{
-		bool show_non_path_signals = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL);
-
-		this->GetWidget<NWidgetStacked>(WID_BS_BLOCK_SEL)->SetDisplayedPlane(show_non_path_signals ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_BS_BLOCK_SPACER_SEL)->SetDisplayedPlane(show_non_path_signals ? 0 : SZSP_NONE);
+		int plane = _settings_client.gui.hide_semaphores ? SZSP_NONE : 0;
+		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_BLOCK_SEL)->SetDisplayedPlane(plane);
+		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_PATH_SEL)->SetDisplayedPlane(plane);
 	}
 
 public:
@@ -1567,6 +1572,7 @@ public:
 
 	void OnInit() override
 	{
+		this->SetSignalUIMode();
 		/* Calculate maximum signal sprite size. */
 		this->sig_sprite_size.width = 0;
 		this->sig_sprite_size.height = 0;
@@ -1701,47 +1707,42 @@ static constexpr std::initializer_list<NWidgetPart> _nested_signal_builder_widge
 
 	/* Container for both signal groups, spacers, and convert/autofill buttons. */
 	NWidget(NWID_HORIZONTAL),
-		/* Block signals (can be hidden). */
-		NWidget(NWID_SELECTION, Colours::Invalid, WID_BS_BLOCK_SEL),
-			NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-				/* Semaphore block signals. */
+		/* Block signals. */
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_BS_SEMAPHORE_BLOCK_SEL),
 				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_NORM), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_ENTRY), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_EXIT), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_COMBO), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
+					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_NORM), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_ENTRY), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_EXIT), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_COMBO), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
 				EndContainer(),
-				/* Electric block signals. */
-				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_NORM), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_ENTRY), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_EXIT), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_COMBO), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-				EndContainer(),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_NORM), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_ENTRY), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_EXIT), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_COMBO), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
 			EndContainer(),
 		EndContainer(),
 
-		/* Divider (only shown if block signals visible). */
-		NWidget(NWID_SELECTION, Colours::Invalid, WID_BS_BLOCK_SPACER_SEL),
-			NWidget(WWT_PANEL, Colours::DarkGreen), SetFill(0, 0), SetToolbarSpacerMinimalSize(), EndContainer(),
-		EndContainer(),
+		NWidget(WWT_PANEL, Colours::DarkGreen), SetFill(0, 1), SetToolbarSpacerMinimalSize(), EndContainer(),
 
 		/* Path signals. */
-		NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
-			/* Semaphore path signals. */
-			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_PBS), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_PBS_OWAY), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_BS_SEMAPHORE_PATH_SEL),
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_PBS), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+					NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_SEMAPHORE_PBS_OWAY), SetToolTip(STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+				EndContainer(),
 			EndContainer(),
-			/* Electric path signals. */
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_PBS), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
-				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_PBS_OWAY), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP), SetToolbarMinimalSize(1), EndContainer(),
+				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_PBS), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
+				NWidget(WWT_PANEL, Colours::DarkGreen, WID_BS_ELECTRIC_PBS_OWAY), SetToolTip(STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP), SetToolbarMinimalSize(1), SetFill(1, 1), EndContainer(),
 			EndContainer(),
 		EndContainer(),
 
-		/* Convert/autofill buttons. */
-		NWidget(NWID_VERTICAL, NWidContainerFlag::EqualSize),
+		/* Keep conversion and density controls side by side so hidden semaphore rows collapse. */
+		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_BS_CONVERT), SetSpriteTip(SPR_IMG_SIGNAL_CONVERT, STR_BUILD_SIGNAL_CONVERT_TOOLTIP), SetFill(0, 1),
 			NWidget(WWT_PANEL, Colours::DarkGreen), SetToolTip(STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP), SetFill(0, 1),
 				NWidget(NWID_VERTICAL), SetPadding(2), SetPIPRatio(1, 0, 1),
@@ -2045,7 +2046,7 @@ void SetDefaultRailGui()
  */
 void ResetSignalVariant(int32_t)
 {
-	SignalVariant new_variant = (TimerGameCalendar::year < _settings_client.gui.semaphore_build_before ? SignalVariant::Semaphore : SignalVariant::Electric);
+	SignalVariant new_variant = GetDefaultSignalVariant();
 
 	if (new_variant != _cur_signal_variant) {
 		Window *w = FindWindowById(WindowClass::BuildSignal, 0);
@@ -2054,6 +2055,16 @@ void ResetSignalVariant(int32_t)
 			w->RaiseWidget((_cur_signal_variant == SignalVariant::Electric ? WID_BS_ELECTRIC_NORM : WID_BS_SEMAPHORE_NORM) + to_underlying(_cur_signal_type));
 		}
 		_cur_signal_variant = new_variant;
+	}
+}
+
+/** Apply the semaphore visibility preference to an already open picker. */
+void UpdateSignalPicker(int32_t)
+{
+	ResetSignalVariant();
+	if (Window *w = FindWindowById(WindowClass::BuildSignal, 0); w != nullptr) {
+		w->ReInit();
+		w->InvalidateData();
 	}
 }
 

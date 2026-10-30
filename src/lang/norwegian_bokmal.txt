@@ -5655,10 +5655,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=feminine}Suk
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Uten navn
-STR_SV_TRAIN_NAME                                               :Tog #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Kjøretøy #{COMMA}
-STR_SV_SHIP_NAME                                                :Skip #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Luftfartøy #{COMMA}
+STR_SV_TRAIN_NAME                                               :Tog {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Kjøretøy {COMMA}
+STR_SV_SHIP_NAME                                                :Skip {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Luftfartøy {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5967,7 +5967,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Selskap {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Gruppe {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

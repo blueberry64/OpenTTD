@@ -47,7 +47,6 @@
 #include "timer/timer_window.h"
 #include "zoom_func.h"
 #include "hotkeys.h"
-#include "graph_gui.h"
 
 #include "widgets/town_widget.h"
 
@@ -381,9 +380,6 @@ public:
 
 	void OnPaint() override
 	{
-		extern const Town *_viewport_highlight_town;
-		this->SetWidgetLoweredState(WID_TV_CATCHMENT, _viewport_highlight_town == this->town);
-
 		this->DrawWidgets();
 	}
 
@@ -490,10 +486,6 @@ public:
 				ShowQueryString(GetString(STR_TOWN_NAME, this->window_number), STR_TOWN_VIEW_RENAME_TOWN_BUTTON, MAX_LENGTH_TOWN_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 				break;
 
-			case WID_TV_CATCHMENT:
-				SetViewportCatchmentTown(Town::Get(this->window_number), !this->IsWidgetLowered(WID_TV_CATCHMENT));
-				break;
-
 			case WID_TV_EXPAND: // expand town - only available on Scenario editor
 				Command<Commands::ExpandTown>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Buildings, TownExpandMode::Roads});
 				break;
@@ -509,11 +501,6 @@ public:
 			case WID_TV_DELETE: // delete town - only available on Scenario editor
 				Command<Commands::DeleteTown>::Post(STR_ERROR_TOWN_CAN_T_DELETE, static_cast<TownID>(this->window_number));
 				break;
-
-			case WID_TV_GRAPH: {
-				ShowTownCargoGraph(this->window_number);
-				break;
-			}
 		}
 	}
 
@@ -614,9 +601,7 @@ public:
 static constexpr std::initializer_list<NWidgetPart> _nested_town_game_view_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
-		NWidget(WWT_PUSHIMGBTN, Colours::Brown, WID_TV_CHANGE_NAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_CAPTION, Colours::Brown, WID_TV_CAPTION),
-		NWidget(WWT_PUSHIMGBTN, Colours::Brown, WID_TV_CENTER_VIEW), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_SHADEBOX, Colours::Brown),
 		NWidget(WWT_DEFSIZEBOX, Colours::Brown),
 		NWidget(WWT_STICKYBOX, Colours::Brown),
@@ -628,9 +613,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_game_view_widge
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::Brown, WID_TV_INFO), SetMinimalSize(260, 32), SetResize(1, 0), SetFill(1, 0), EndContainer(),
 	NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_CENTER_VIEW), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_SHOW_AUTHORITY), SetMinimalSize(80, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON, STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP),
-		NWidget(WWT_TEXTBTN, Colours::Brown, WID_TV_CATCHMENT), SetMinimalSize(40, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
-		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_GRAPH), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_CARGO_GRAPH, STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_CHANGE_NAME), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, Colours::Brown),
 	EndContainer(),
 };
@@ -646,9 +631,7 @@ static WindowDesc _town_game_view_desc(
 static constexpr std::initializer_list<NWidgetPart> _nested_town_editor_view_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
-		NWidget(WWT_PUSHIMGBTN, Colours::Brown, WID_TV_CHANGE_NAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_CAPTION, Colours::Brown, WID_TV_CAPTION), SetToolTip(STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHIMGBTN, Colours::Brown, WID_TV_CENTER_VIEW), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_SHADEBOX, Colours::Brown),
 		NWidget(WWT_DEFSIZEBOX, Colours::Brown),
 		NWidget(WWT_STICKYBOX, Colours::Brown),
@@ -665,8 +648,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_editor_view_wid
 		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_EXPAND_ROADS), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_EXPAND_ROADS_BUTTON, STR_TOWN_VIEW_EXPAND_ROADS_TOOLTIP),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_CENTER_VIEW), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_TOWN_VIEW_CENTER_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_CHANGE_NAME), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_TV_DELETE), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_TOWN_VIEW_DELETE_BUTTON, STR_TOWN_VIEW_DELETE_TOOLTIP),
-		NWidget(WWT_TEXTBTN, Colours::Brown, WID_TV_CATCHMENT), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
 		NWidget(WWT_RESIZEBOX, Colours::Brown),
 	EndContainer(),
 };

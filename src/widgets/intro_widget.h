@@ -12,6 +12,13 @@
 
 /** Widgets of the #SelectGameWindow class. */
 enum SelectGameIntroWidgets : WidgetID {
+	WID_SGI_TEMPERATE_LANDSCAPE,   ///< Temperate climate picture.
+	WID_SGI_ARCTIC_LANDSCAPE,      ///< Arctic climate picture.
+	WID_SGI_TROPIC_LANDSCAPE,      ///< Tropical climate picture.
+	WID_SGI_TOYLAND_LANDSCAPE,     ///< Toyland climate picture.
+	WID_SGI_GRF_SETTINGS,         ///< NewGRF settings.
+	WID_SGI_AI_SETTINGS,          ///< AI settings.
+	WID_SGI_GS_SETTINGS,          ///< Game Script settings.
 	WID_SGI_GENERATE_GAME,         ///< Generate game button.
 	WID_SGI_LOAD_GAME,             ///< Load game button.
 	WID_SGI_PLAY_SCENARIO,         ///< Play scenario button.

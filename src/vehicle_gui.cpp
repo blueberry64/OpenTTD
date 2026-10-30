@@ -2140,8 +2140,7 @@ public:
 				return;
 
 			case WID_VL_FILTER_BY_CARGO: { // Cargo filter dropdown
-				static std::string cargo_filter;
-				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0, DropDownOption::Filterable, &cargo_filter);
+				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0);
 				break;
 			}
 
@@ -2359,6 +2358,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_nontrain_vehicle_det
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
 		NWidget(WWT_CAPTION, Colours::Grey, WID_VD_CAPTION),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_VD_RENAME), SetMinimalSize(40, 0), SetStringTip(STR_BUTTON_RENAME),
 		NWidget(WWT_SHADEBOX, Colours::Grey),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
 		NWidget(WWT_STICKYBOX, Colours::Grey),
@@ -2382,6 +2382,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_train_vehicle_detail
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
 		NWidget(WWT_CAPTION, Colours::Grey, WID_VD_CAPTION), SetStringTip(STR_VEHICLE_DETAILS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_VD_RENAME), SetMinimalSize(40, 0), SetStringTip(STR_BUTTON_RENAME),
 		NWidget(WWT_SHADEBOX, Colours::Grey),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
 		NWidget(WWT_STICKYBOX, Colours::Grey),
@@ -2448,6 +2449,7 @@ struct VehicleDetailsWindow : Window {
 		this->vscroll = (v->type == VehicleType::Train ? this->GetScrollbar(WID_VD_SCROLLBAR) : nullptr);
 		this->FinishInitNested(window_number);
 
+		this->GetWidget<NWidgetCore>(WID_VD_RENAME)->SetToolTip(STR_VEHICLE_DETAILS_TRAIN_RENAME + to_underlying(v->type));
 		this->owner = v->owner;
 	}
 
@@ -2739,6 +2741,7 @@ struct VehicleDetailsWindow : Window {
 			TimerGameEconomy::UsingWallclockUnits() ? STR_VEHICLE_DETAILS_MINUTES : STR_VEHICLE_DETAILS_DAYS;
 		this->GetWidget<NWidgetCore>(WID_VD_SERVICE_INTERVAL_DROPDOWN)->SetString(str);
 		this->SetWidgetDisabledState(WID_VD_SERVICE_INTERVAL_DROPDOWN, v->owner != _local_company);
+		this->SetWidgetDisabledState(WID_VD_RENAME, v->owner != _local_company);
 
 		this->DrawWidgets();
 	}
@@ -2746,6 +2749,13 @@ struct VehicleDetailsWindow : Window {
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
+			case WID_VD_RENAME: { // rename
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				ShowQueryString(GetString(STR_VEHICLE_NAME, v->index), STR_QUERY_RENAME_TRAIN_CAPTION + to_underlying(v->type),
+						MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
+				break;
+			}
+
 			case WID_VD_INCREASE_SERVICING_INTERVAL:   // increase int
 			case WID_VD_DECREASE_SERVICING_INTERVAL: { // decrease int
 				const Vehicle *v = Vehicle::Get(this->window_number);
@@ -2819,6 +2829,13 @@ struct VehicleDetailsWindow : Window {
 		}
 	}
 
+	void OnQueryTextFinished(std::optional<std::string> str) override
+	{
+		if (!str.has_value()) return;
+
+		Command<Commands::RenameVehicle>::Post(STR_ERROR_CAN_T_RENAME_TRAIN + to_underlying(Vehicle::Get(this->window_number)->type), static_cast<VehicleID>(this->window_number), *str);
+	}
+
 	void OnResize() override
 	{
 		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_VD_MATRIX);
@@ -2862,9 +2879,7 @@ static void ShowVehicleDetailsWindow(const Vehicle *v)
 static constexpr std::initializer_list<NWidgetPart> _nested_vehicle_view_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
-		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_VV_RENAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME),
 		NWidget(WWT_CAPTION, Colours::Grey, WID_VV_CAPTION),
-		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_VV_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION),
 		NWidget(WWT_DEBUGBOX, Colours::Grey),
 		NWidget(WWT_SHADEBOX, Colours::Grey),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
@@ -2877,6 +2892,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_vehicle_view_widgets
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
+			NWidget(WWT_IMGBTN, Colours::Grey, WID_VV_LOCATION), SetMinimalSize(18, 18), SetSpriteTip(SPR_CENTRE_VIEW_VEHICLE),
 			NWidget(NWID_SELECTION, Colours::Invalid, WID_VV_SELECT_DEPOT_CLONE),
 				NWidget(WWT_IMGBTN, Colours::Grey, WID_VV_GOTO_DEPOT), SetMinimalSize(18, 18), SetSpriteTip(SPR_EMPTY /* filled later */),
 				NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_VV_CLONE), SetMinimalSize(18, 18), SetSpriteTip(SPR_EMPTY /* filled later */),
@@ -3085,7 +3101,6 @@ public:
 		this->GetWidget<NWidgetViewport>(WID_VV_VIEWPORT)->InitializeViewport(this, static_cast<VehicleID>(this->window_number), ScaleZoomGUI(_vehicle_view_zoom_levels[v->type]));
 
 		this->GetWidget<NWidgetCore>(WID_VV_START_STOP)->SetToolTip(STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP + to_underlying(v->type));
-		this->GetWidget<NWidgetCore>(WID_VV_RENAME)->SetToolTip(STR_VEHICLE_DETAILS_TRAIN_RENAME + to_underlying(v->type));
 		this->GetWidget<NWidgetCore>(WID_VV_LOCATION)->SetToolTip(STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + to_underlying(v->type));
 		this->GetWidget<NWidgetCore>(WID_VV_REFIT)->SetToolTip(STR_VEHICLE_VIEW_TRAIN_REFIT_TOOLTIP + to_underlying(v->type));
 		this->GetWidget<NWidgetCore>(WID_VV_GOTO_DEPOT)->SetToolTip(STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + to_underlying(v->type));
@@ -3135,7 +3150,6 @@ public:
 		bool is_localcompany = v->owner == _local_company;
 		bool refittable_and_stopped_in_depot = IsVehicleRefittable(v);
 
-		this->SetWidgetDisabledState(WID_VV_RENAME, !is_localcompany);
 		this->SetWidgetDisabledState(WID_VV_GOTO_DEPOT, !is_localcompany);
 		this->SetWidgetDisabledState(WID_VV_REFIT, !refittable_and_stopped_in_depot || !is_localcompany);
 		this->SetWidgetDisabledState(WID_VV_CLONE, !is_localcompany);
@@ -3286,12 +3300,6 @@ public:
 		const Vehicle *v = Vehicle::Get(this->window_number);
 
 		switch (widget) {
-			case WID_VV_RENAME: { // rename
-				ShowQueryString(GetString(STR_VEHICLE_NAME, v->index), STR_QUERY_RENAME_TRAIN_CAPTION + to_underlying(v->type),
-						MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
-				break;
-			}
-
 			case WID_VV_START_STOP: // start stop
 				StartStopVehicle(v, false);
 				break;
@@ -3381,13 +3389,6 @@ public:
 			}
 		}
 		return Window::OnHotkey(hotkey);
-	}
-
-	void OnQueryTextFinished(std::optional<std::string> str) override
-	{
-		if (!str.has_value()) return;
-
-		Command<Commands::RenameVehicle>::Post(STR_ERROR_CAN_T_RENAME_TRAIN + to_underlying(Vehicle::Get(this->window_number)->type), static_cast<VehicleID>(this->window_number), *str);
 	}
 
 	void OnMouseOver([[maybe_unused]] Point pt, WidgetID widget) override

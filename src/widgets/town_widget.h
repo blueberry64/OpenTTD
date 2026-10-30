@@ -40,12 +40,10 @@ enum TownViewWidgets : WidgetID {
 	WID_TV_CENTER_VIEW,    ///< Center the main view on this town.
 	WID_TV_SHOW_AUTHORITY, ///< Show the town authority window.
 	WID_TV_CHANGE_NAME,    ///< Change the name of this town.
-	WID_TV_CATCHMENT,      ///< Toggle catchment area highlight.
 	WID_TV_EXPAND,         ///< Expand this town (scenario editor only).
 	WID_TV_EXPAND_BUILDINGS, ///< Expand number of buildings this town (scenario editor only).
 	WID_TV_EXPAND_ROADS, ///< Expand roads of this town (scenario editor only).
 	WID_TV_DELETE,         ///< Delete this town (scenario editor only).
-	WID_TV_GRAPH,
 };
 
 /** Widgets of the #FoundTownWindow class. */

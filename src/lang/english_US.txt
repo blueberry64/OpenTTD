@@ -638,6 +638,10 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Cargo Pa
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Days in transit
 STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}Seconds in transit
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Payment for delivering 10 units (or 10,000 liters) of cargo a distance of 20 squares
+STR_GRAPH_CARGO_PAYMENT_DISTANCE_TITLE                          :{TINY_FONT}{BLACK}Payment for delivering 10 units (or 10,000 liters) of cargo at a constant {VELOCITY}
+STR_GRAPH_CARGO_PAYMENT_DISTANCE                                :{TINY_FONT}{BLACK}Distance (tiles)
+STR_GRAPH_CARGO_PAYMENT_AUTO_RANGE                              :{TINY_FONT}{BLACK}Auto: {COMMA} tiles
+STR_GRAPH_CARGO_PAYMENT_RANGE_TOOLTIP                           :{BLACK}Set the maximum distance shown on this graph (enter 0 for automatic scaling)
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}All
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}None
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Display all cargos on the graph
@@ -5653,10 +5657,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Sugar Mine
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Unnamed
-STR_SV_TRAIN_NAME                                               :Train #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Road Vehicle #{COMMA}
-STR_SV_SHIP_NAME                                                :Ship #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Aircraft #{COMMA}
+STR_SV_TRAIN_NAME                                               :Train {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Road Vehicle {COMMA}
+STR_SV_SHIP_NAME                                                :Ship {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Aircraft {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5965,7 +5969,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Company {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Group {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

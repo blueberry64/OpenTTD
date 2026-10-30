@@ -15,8 +15,14 @@ enum DynamicPlaceIndustriesWidgets : WidgetID {
 	WID_DPI_SCENARIO_EDITOR_PANE,            ///< Pane containing SE-only widgets.
 	WID_DPI_REMOVE_ALL_INDUSTRIES_WIDGET,    ///< Remove all industries button.
 	WID_DPI_CREATE_RANDOM_INDUSTRIES_WIDGET, ///< Create random industries button.
-	WID_DPI_MATRIX_WIDGET,                   ///< Matrix of the industries.
-	WID_DPI_SCROLLBAR,                       ///< Scrollbar of the matrix.
+	WID_DPI_INDUSTRY_DROPDOWN,              ///< Industry type selector.
+	WID_DPI_PREVIEW, ///< Original industry preview.
+	WID_DPI_LAYOUT_PREV, ///< Previous layout.
+	WID_DPI_LAYOUT_LABEL, ///< Selected layout.
+	WID_DPI_LAYOUT_NEXT, ///< Next layout.
+	WID_DPI_COLOUR_PREV, ///< Previous colour.
+	WID_DPI_COLOUR_LABEL, ///< Selected colour.
+	WID_DPI_COLOUR_NEXT, ///< Next colour.
 	WID_DPI_INFOPANEL,                       ///< Info panel about the industry.
 	WID_DPI_DISPLAY_WIDGET,                  ///< Display chain button.
 	WID_DPI_FUND_WIDGET,                     ///< Fund button.
@@ -28,8 +34,6 @@ enum IndustryViewWidgets : WidgetID {
 	WID_IV_VIEWPORT, ///< Viewport of the industry.
 	WID_IV_INFO,     ///< Info of the industry.
 	WID_IV_GOTO,     ///< Goto button.
-	WID_IV_DISPLAY,  ///< Display chain button.
-	WID_IV_GRAPH,    ///< Production history button.
 };
 
 /** Widgets of the #IndustryDirectoryWindow class. */

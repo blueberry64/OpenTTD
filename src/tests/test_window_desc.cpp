@@ -15,6 +15,8 @@
 
 #include "../core/format.hpp"
 #include "../window_gui.h"
+#include "../industrytype.h"
+#include "../core/backup_type.hpp"
 
 #include "../safeguards.h"
 
@@ -96,4 +98,21 @@ TEST_CASE_METHOD(WindowDescTestsFixture, "WindowDesc - NWidgetPart validity")
 
 	REQUIRE_NOTHROW(root = MakeWindowNWidgetTree(window_desc->nwid_parts, &shade_select));
 	CHECK((root != nullptr));
+}
+
+TEST_CASE("Industry preview graphics compatibility")
+{
+	/* Behaviour-only NewGRFs can rearrange original tiles. Compatibility depends on
+	 * the tiles actually drawn, including tile overrides, rather than the industry GRF. */
+	AutoRestoreBackup override_backup(_industry_tile_specs[0].grf_prop.override_id, INVALID_INDUSTRYTILE);
+	AutoRestoreBackup custom_override_backup(_industry_tile_specs[NEW_INDUSTRYTILEOFFSET].grf_prop.override_id, INVALID_INDUSTRYTILE);
+	IndustryTileLayout layout{{{0, 0}, 0}, {{1, 0}, GFX_WATERTILE_SPECIALCHECK}};
+	CHECK(IndustryLayoutUsesOriginalGraphics(layout));
+
+	layout.push_back({{0, 1}, NEW_INDUSTRYTILEOFFSET});
+	CHECK_FALSE(IndustryLayoutUsesOriginalGraphics(layout));
+	layout.pop_back();
+
+	_industry_tile_specs[0].grf_prop.override_id = NEW_INDUSTRYTILEOFFSET;
+	CHECK_FALSE(IndustryLayoutUsesOriginalGraphics(layout));
 }

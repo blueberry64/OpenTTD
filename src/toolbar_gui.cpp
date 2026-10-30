@@ -118,7 +118,7 @@ public:
  */
 static DropDownOptions GetToolbarDropDownOptions(DropDownOptions options = {})
 {
-	if (_settings_client.gui.toolbar_dropdown_autoselect) options.Set(DropDownOption::InstantClose).Reset(DropDownOption::Filterable);
+	if (_settings_client.gui.toolbar_dropdown_autoselect) options.Set(DropDownOption::InstantClose);
 	return options;
 }
 
@@ -884,14 +884,9 @@ static CallBackFunction ToolbarZoomOutClick(Window *w)
 }
 
 /* --- Rail button menu --- */
-
-static std::string _railtype_filter; ///< Persistent filter text for railtype dropdown menu.
-static std::string _roadtype_filter; ///< Persistent filter text for roadtype dropdown menu.
-static std::string _tramtype_filter; ///< Persistent filter text for tramtype dropdown menu.
-
 static CallBackFunction ToolbarBuildRailClick(Window *w)
 {
-	ShowDropDownList(w, GetRailTypeDropDownList(), _last_built_railtype, WID_TN_RAILS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_railtype_filter);
+	ShowDropDownList(w, GetRailTypeDropDownList(), _last_built_railtype, WID_TN_RAILS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -912,7 +907,7 @@ static CallBackFunction MenuClickBuildRail(int index)
 
 static CallBackFunction ToolbarBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TN_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TN_ROADS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -933,7 +928,7 @@ static CallBackFunction MenuClickBuildRoad(int index)
 
 static CallBackFunction ToolbarBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TN_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TN_TRAMS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -1276,7 +1271,7 @@ static CallBackFunction ToolbarScenGenIndustry(Window *w)
 
 static CallBackFunction ToolbarScenBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TE_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TE_ROADS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -1295,7 +1290,7 @@ static CallBackFunction ToolbarScenBuildRoad(int index)
 
 static CallBackFunction ToolbarScenBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TE_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TE_TRAMS, 140, GetToolbarDropDownOptions());
 	return CallBackFunction::None;
 }
 
@@ -1814,7 +1809,6 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 			WID_TN_ZOOM_OUT,
 			WID_TN_RAILS,
 			WID_TN_ROADS,
-			WID_TN_TRAMS,
 			WID_TN_WATER,
 			WID_TN_AIR,
 			WID_TN_LANDSCAPE,
@@ -1877,7 +1871,6 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 			WID_TE_TOWN_GENERATE,
 			WID_TE_INDUSTRY,
 			WID_TE_ROADS,
-			WID_TE_TRAMS,
 			WID_TE_WATER,
 			WID_TE_TREES,
 			WID_TE_SIGNS,
@@ -1897,7 +1890,6 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 			WID_TE_TOWN_GENERATE,
 			WID_TE_INDUSTRY,
 			WID_TE_ROADS,
-			WID_TE_TRAMS,
 			WID_TE_WATER,
 			WID_TE_TREES,
 			WID_TE_SIGNS,
@@ -1911,7 +1903,6 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 			WID_TE_TOWN_GENERATE,
 			WID_TE_INDUSTRY,
 			WID_TE_ROADS,
-			WID_TE_TRAMS,
 			WID_TE_WATER,
 			WID_TE_TREES,
 			WID_TE_SIGNS,
@@ -1922,7 +1913,6 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 			WID_TE_SETTINGS,
 			WID_TE_SAVE,
 			WID_TE_DATE_PANEL,
-			WID_TE_SMALL_MAP,
 			WID_TE_ZOOM_IN,
 			WID_TE_ZOOM_OUT,
 			WID_TE_MUSIC_SOUND,
@@ -2026,7 +2016,7 @@ struct MainToolbarWindow : Window {
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
 		 * Since enabled state is the default, just disable when needed */
-		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_TRAMS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE);
+		this->SetWidgetsDisabledState(_local_company == COMPANY_SPECTATOR, WID_TN_RAILS, WID_TN_ROADS, WID_TN_WATER, WID_TN_AIR, WID_TN_LANDSCAPE);
 		/* disable company list drop downs, if there are no companies */
 		this->SetWidgetsDisabledState(Company::GetNumItems() == 0, WID_TN_STATIONS, WID_TN_FINANCES, WID_TN_TRAINS, WID_TN_ROADVEHS, WID_TN_SHIPS, WID_TN_AIRCRAFT);
 
@@ -2210,7 +2200,6 @@ static constexpr std::tuple<WidgetID, WidgetType, SpriteID> _toolbar_button_spri
 	{WID_TN_ZOOM_OUT,     WWT_PUSHIMGBTN, SPR_IMG_ZOOMOUT},
 	{WID_TN_RAILS,        WWT_IMGBTN,     SPR_IMG_BUILDRAIL},
 	{WID_TN_ROADS,        WWT_IMGBTN,     SPR_IMG_BUILDROAD},
-	{WID_TN_TRAMS,        WWT_IMGBTN,     SPR_IMG_BUILDTRAMS},
 	{WID_TN_WATER,        WWT_IMGBTN,     SPR_IMG_BUILDWATER},
 	{WID_TN_AIR,          WWT_IMGBTN,     SPR_IMG_BUILDAIR},
 	{WID_TN_LANDSCAPE,    WWT_IMGBTN,     SPR_IMG_LANDSCAPING},
@@ -2380,7 +2369,6 @@ struct ScenarioEditorToolbarWindow : Window {
 		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= CalendarTime::MIN_YEAR);
 		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= CalendarTime::MAX_YEAR);
 		this->SetWidgetDisabledState(WID_TE_ROADS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RoadTramType::Road)));
-		this->SetWidgetDisabledState(WID_TE_TRAMS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RoadTramType::Tram)));
 
 		this->DrawWidgets();
 	}
@@ -2589,7 +2577,6 @@ static constexpr std::initializer_list<NWidgetPart> _nested_toolb_scen_inner_wid
 	NWidget(WWT_IMGBTN, Colours::Grey, WID_TE_TOWN_GENERATE), SetSpriteTip(SPR_IMG_TOWN, STR_SCENEDIT_TOOLBAR_TOWN_GENERATION_TOOLTIP),
 	NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_TE_INDUSTRY), SetSpriteTip(SPR_IMG_INDUSTRY, STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION_TOOLTIP),
 	NWidget(WWT_IMGBTN, Colours::Grey, WID_TE_ROADS), SetSpriteTip(SPR_IMG_BUILDROAD, STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION_TOOLTIP),
-	NWidget(WWT_IMGBTN, Colours::Grey, WID_TE_TRAMS), SetSpriteTip(SPR_IMG_BUILDTRAMS, STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION_TOOLTIP),
 	NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_TE_WATER), SetSpriteTip(SPR_IMG_BUILDWATER, STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS),
 	NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_TE_TREES), SetSpriteTip(SPR_IMG_PLANTTREES, STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP),
 	NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_TE_SIGNS), SetSpriteTip(SPR_IMG_SIGN, STR_SCENEDIT_TOOLBAR_PLACE_SIGN_TOOLTIP),

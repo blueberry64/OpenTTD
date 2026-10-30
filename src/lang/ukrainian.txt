@@ -5753,10 +5753,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE.z                                  :цукрову 
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Без назви
-STR_SV_TRAIN_NAME                                               :Поїзд #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Транспорт #{COMMA}
-STR_SV_SHIP_NAME                                                :Судно #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Борт #{COMMA}
+STR_SV_TRAIN_NAME                                               :Поїзд {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Транспорт {COMMA}
+STR_SV_SHIP_NAME                                                :Судно {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Борт {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -6065,7 +6065,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Компанія {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Група {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

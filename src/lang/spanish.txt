@@ -5596,9 +5596,9 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=f}Mina de Az
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Sin nombre
-STR_SV_TRAIN_NAME                                               :Tren #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Vehículo de carretera #{COMMA}
-STR_SV_SHIP_NAME                                                :Barco #{COMMA}
+STR_SV_TRAIN_NAME                                               :Tren {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Vehículo de carretera {COMMA}
+STR_SV_SHIP_NAME                                                :Barco {COMMA}
 STR_SV_AIRCRAFT_NAME                                            :Aeronave {COMMA}
 
 ###length 27
@@ -5908,7 +5908,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Empresa {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Grupo {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN}, {STRING}
 
 ###length 2

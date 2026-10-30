@@ -41,6 +41,59 @@ bool FiosItemNameSorter(const FiosItem &a, const FiosItem &b)
 	return StrNaturalCompare(a.title.GetDecodedString(), b.title.GetDecodedString()) < 0;
 }
 
+/**
+ * Replace English ordinal dates in a title with ISO dates for name sorting only.
+ * @param title Displayed title, possibly containing dates such as "24th Oct 1943".
+ * @return Comparison key; the displayed title and filename are not changed.
+ */
+std::string FiosMakeDateSortKey(std::string_view title)
+{
+	static constexpr std::string_view months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	static constexpr int month_days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	constexpr std::string_view digits = "0123456789";
+	constexpr std::string_view word_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	std::string key;
+	for (size_t pos = 0; pos < title.size();) {
+		size_t date_length = 0;
+		/* Do not recognise a date in the middle of a word or a larger number. */
+		if (digits.find(title[pos]) != std::string_view::npos && (pos == 0 || word_chars.find(title[pos - 1]) == std::string_view::npos)) {
+			StringConsumer consumer(title.substr(pos));
+			auto day = consumer.TryReadIntegerBase<int>(10);
+			if (day.has_value() && *day >= 1 && *day <= 31 && consumer.GetBytesRead() <= 2) {
+				std::string_view suffix = (*day >= 11 && *day <= 13) ? "th" : (*day % 10 == 1) ? "st" : (*day % 10 == 2) ? "nd" : (*day % 10 == 3) ? "rd" : "th";
+				if (consumer.ReadIf(suffix) && consumer.ReadIf(" ")) {
+					for (size_t month = 0; month < std::size(months); ++month) {
+						if (!StrEqualsIgnoreCase(consumer.GetLeftData().substr(0, 3), months[month])) continue;
+						consumer.Skip(3);
+						if (!consumer.ReadIf(" ")) break;
+						if (!consumer.AnyBytesLeft() || digits.find(consumer.GetLeftData().front()) == std::string_view::npos) break;
+						auto year = consumer.TryReadIntegerBase<int>(10);
+						if (!year.has_value()) break;
+						if (consumer.AnyBytesLeft() && word_chars.find(consumer.GetLeftData().front()) != std::string_view::npos) break;
+						bool leap_year = *year % 4 == 0 && (*year % 100 != 0 || *year % 400 == 0);
+						if (*day > month_days[month] + (month == 1 && leap_year ? 1 : 0)) break;
+						key += fmt::format("{:04}-{:02}-{:02}", *year, month + 1, *day);
+						date_length = consumer.GetBytesRead();
+						break;
+					}
+				}
+			}
+		}
+		if (date_length != 0) {
+			pos += date_length;
+		} else {
+			key += title[pos++];
+		}
+	}
+	return key;
+}
+
+/** Sort save/load titles by name, comparing English ordinal dates in ISO order. @copydoc GUIList::Sorter */
+bool FiosItemDateNameSorter(const FiosItem &a, const FiosItem &b)
+{
+	return StrNaturalCompare(FiosMakeDateSortKey(a.title.GetDecodedString()), FiosMakeDateSortKey(b.title.GetDecodedString())) < 0;
+}
+
 /** Sort files by their modification date, and name when they are equal. @copydoc GUIList::Sorter */
 bool FiosItemModificationDateSorter(const FiosItem &a, const FiosItem &b)
 {

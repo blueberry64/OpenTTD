@@ -13,6 +13,7 @@
 /** Widgets of the #StationViewWindow class. */
 enum StationViewWidgets : WidgetID {
 	WID_SV_CAPTION,            ///< Caption of the window.
+	WID_SV_CARGO_CONTROLS_SEL, ///< Container for the cargo grouping and sorting controls.
 	WID_SV_GROUP,              ///< label for "group by"
 	WID_SV_GROUP_BY,           ///< 'Group by' button
 	WID_SV_SORT_ORDER,         ///< 'Sort order' button
@@ -51,7 +52,9 @@ enum StationListWidgets : WidgetID {
 	WID_STL_SORTDROPBTN,    ///< Dropdown button.
 	WID_STL_FILTER, ///< Filter of name.
 
-	WID_STL_CARGODROPDOWN,  ///< Cargo type dropdown list.
+	WID_STL_NOCARGOWAITING, ///< Stations with no cargo rating.
+	WID_STL_CARGOALL,       ///< Select all cargo types.
+	WID_STL_CARGOSTART,     ///< First dynamically generated cargo button; keep last.
 };
 
 /** Widgets of the #SelectStationWindow class. */

@@ -5777,10 +5777,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE.kreip                              :cukraus kasykla
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Bevardis
-STR_SV_TRAIN_NAME                                               :Traukinys #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Automobilis #{COMMA}
-STR_SV_SHIP_NAME                                                :Laivas #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Lėktuvas #{COMMA}
+STR_SV_TRAIN_NAME                                               :Traukinys {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Automobilis {COMMA}
+STR_SV_SHIP_NAME                                                :Laivas {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Lėktuvas {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -6089,7 +6089,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Kompanija {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Grupė {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

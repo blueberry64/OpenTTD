@@ -30,7 +30,6 @@
 #include "order_backup.h"
 #include "zoom_func.h"
 #include "error.h"
-#include "depot_cmd.h"
 #include "train_cmd.h"
 #include "vehicle_cmd.h"
 #include "core/geometry_func.hpp"
@@ -51,11 +50,7 @@
 static constexpr std::initializer_list<NWidgetPart> _nested_train_depot_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
-		NWidget(NWID_SELECTION, Colours::Invalid, WID_D_SHOW_RENAME), SetAspect(WidgetDimensions::ASPECT_RENAME), // rename button
-			NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_D_RENAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_DEPOT_RENAME_TOOLTIP),
-		EndContainer(),
 		NWidget(WWT_CAPTION, Colours::Grey, WID_D_CAPTION),
-		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_D_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION),
 		NWidget(WWT_SHADEBOX, Colours::Grey),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
 		NWidget(WWT_STICKYBOX, Colours::Grey),
@@ -80,6 +75,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_train_depot_widgets 
 	NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_D_BUILD), SetFill(1, 1), SetResize(1, 0),
 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_D_CLONE), SetFill(1, 1), SetResize(1, 0),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_D_LOCATION), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION),
 		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_D_VEHICLE_LIST), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetFill(0, 1),
 		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_D_STOP_ALL), SetSpriteTip(SPR_FLAG_VEH_STOPPED), SetAspect(WidgetDimensions::ASPECT_VEHICLE_FLAG), SetFill(0, 1),
 		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_D_START_ALL), SetSpriteTip(SPR_FLAG_VEH_RUNNING), SetAspect(WidgetDimensions::ASPECT_VEHICLE_FLAG), SetFill(0, 1),
@@ -291,8 +287,6 @@ struct DepotWindow : Window {
 		this->CreateNestedTree();
 		this->hscroll = (this->type == VehicleType::Train ? this->GetScrollbar(WID_D_H_SCROLL) : nullptr);
 		this->vscroll = this->GetScrollbar(WID_D_V_SCROLL);
-		/* Don't show 'rename button' of aircraft hangar */
-		this->GetWidget<NWidgetStacked>(WID_D_SHOW_RENAME)->SetDisplayedPlane(type == VehicleType::Aircraft ? SZSP_NONE : 0);
 		/* Only train depots have a horizontal scrollbar and a 'sell chain' button */
 		if (type == VehicleType::Train) this->GetWidget<NWidgetCore>(WID_D_MATRIX)->SetMatrixDimension(1, 0 /* auto-scale */);
 		this->GetWidget<NWidgetStacked>(WID_D_SHOW_H_SCROLL)->SetDisplayedPlane(type == VehicleType::Train ? 0 : SZSP_HORIZONTAL);
@@ -795,7 +789,6 @@ struct DepotWindow : Window {
 			WID_D_SELL_ALL,
 			WID_D_BUILD,
 			WID_D_CLONE,
-			WID_D_RENAME,
 			WID_D_AUTOREPLACE);
 
 		this->DrawWidgets();
@@ -838,11 +831,6 @@ struct DepotWindow : Window {
 				}
 				break;
 
-			case WID_D_RENAME: // Rename button
-				ShowQueryString(GetString(STR_DEPOT_NAME, this->type, Depot::GetByTile(TileIndex(this->window_number))->index), STR_DEPOT_RENAME_DEPOT_CAPTION,
-					MAX_LENGTH_DEPOT_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
-				break;
-
 			case WID_D_STOP_ALL:
 			case WID_D_START_ALL: {
 				VehicleListIdentifier vli(VehicleListType::Depot, this->type, this->owner);
@@ -871,14 +859,6 @@ struct DepotWindow : Window {
 				break;
 
 		}
-	}
-
-	void OnQueryTextFinished(std::optional<std::string> str) override
-	{
-		if (!str.has_value()) return;
-
-		/* Do depot renaming */
-		Command<Commands::RenameDepot>::Post(STR_ERROR_CAN_T_RENAME_DEPOT, this->GetDestinationIndex().ToDepotID(), *str);
 	}
 
 	bool OnRightClick([[maybe_unused]] Point pt, WidgetID widget) override

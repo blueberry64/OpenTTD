@@ -13,13 +13,18 @@
 #include "graph_gui.h"
 #include "window_gui.h"
 #include "company_base.h"
+#include "company_func.h"
 #include "company_gui.h"
 #include "economy_func.h"
+#include "engine_base.h"
+#include "engine_func.h"
 #include "cargotype.h"
 #include "strings_func.h"
 #include "window_func.h"
 #include "sound_func.h"
 #include "gfx_func.h"
+#include "textbuf_gui.h"
+#include "core/string_consumer.hpp"
 #include "core/geometry_func.hpp"
 #include "currency_func.h"
 #include "timer/timer.h"
@@ -178,8 +183,6 @@ protected:
 	static constexpr PixelColour GRAPH_YEAR_LINE_COLOUR =  GREY_SCALE(5);
 	static const int GRAPH_NUM_MONTHS       =  24; ///< Number of months displayed in the graph.
 	static const int GRAPH_PAYMENT_RATE_STEPS = 20; ///< Number of steps on Payment rate graph.
-	static const int PAYMENT_GRAPH_X_STEP_DAYS    = 10; ///< X-axis step label for cargo payment rates "Days in transit".
-	static const int PAYMENT_GRAPH_X_STEP_SECONDS = 20; ///< X-axis step label for cargo payment rates "Seconds in transit".
 	static const int ECONOMY_YEAR_MINUTES = 12;  ///< Minutes per economic year.
 	static const int ECONOMY_QUARTER_MINUTES = 3;  ///< Minutes per economic quarter.
 	static const int ECONOMY_MONTH_MINUTES = 1;  ///< Minutes per economic month.
@@ -1391,6 +1394,76 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 
 struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 	static inline CargoTypes excluded_cargo_types{};
+	static constexpr uint DISTANCE_STEP = 12;
+	static constexpr uint DEFAULT_SPEED = 100;
+	static constexpr uint MAX_DISTANCE = (UINT16_MAX / GRAPH_PAYMENT_RATE_STEPS) * GRAPH_PAYMENT_RATE_STEPS;
+	uint speed = DEFAULT_SPEED; ///< Assumed constant speed in km-ish/h.
+	bool auto_distance = true; ///< Automatically show some distance beyond the last visible cargo peak.
+	bool auto_distance_dirty = true;
+	bool editing_distance = false; ///< Which value the open query window edits.
+
+	uint16_t GetTransitPeriods(uint distance) const
+	{
+		/* At train speed, 4096/speed ticks are needed per tile. Cargo normally ages every 185 ticks. */
+		return ClampTo<uint16_t>(static_cast<uint64_t>(distance) * 4096 / (static_cast<uint64_t>(this->speed) * Ticks::CARGO_AGING_TICKS));
+	}
+
+	Money GetPayment(const CargoSpec *cs, uint distance) const
+	{
+		return GetTransportedGoodsIncome(10, distance, this->GetTransitPeriods(distance), cs->Index());
+	}
+
+	/** Place the furthest visible cargo peak about three quarters across the graph. */
+	void UpdateAutoDistance()
+	{
+		/* With cargo aging disabled the standard payment curve has no peak. */
+		if (_settings_game.economy.cargo_aging_rate == 0) {
+			this->x_values_increment = DISTANCE_STEP;
+			this->auto_distance_dirty = false;
+			return;
+		}
+
+		uint last_peak = 0;
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
+			if (this->GetExcludedCargoTypes().Test(cs->Index())) continue;
+
+			/* Scan far enough for the usual payment decay, with at most 256 samples per cargo. */
+			uint max_periods = cs->transit_periods[0] + cs->transit_periods[1] + 256;
+			uint aging_rate = _settings_game.economy.cargo_aging_rate;
+			uint64_t scan_distance = static_cast<uint64_t>(this->speed) * Ticks::CARGO_AGING_TICKS * max_periods * 100 / (4096 * aging_rate);
+			uint limit = std::min<uint64_t>(MAX_DISTANCE, std::max<uint64_t>(scan_distance, GRAPH_PAYMENT_RATE_STEPS));
+			uint sample_step = std::max<uint>(1, (limit + 255) / 256);
+			Money peak_payment = 0;
+			uint peak_distance = 0;
+			for (uint distance = sample_step; distance <= limit; distance += sample_step) {
+				Money payment = this->GetPayment(cs, distance);
+				if (payment > peak_payment) {
+					peak_payment = payment;
+					peak_distance = distance;
+				} else if (peak_distance != 0 && payment < peak_payment / 2 && distance > peak_distance + 4 * sample_step) {
+					/* Ignore the small teeth caused by whole-number cargo aging periods. */
+					break;
+				}
+			}
+			last_peak = std::max(last_peak, peak_distance);
+		}
+
+		uint range = last_peak == 0 ? DISTANCE_STEP * GRAPH_PAYMENT_RATE_STEPS : std::min<uint64_t>(MAX_DISTANCE, (static_cast<uint64_t>(last_peak) * 4 + 2) / 3);
+		this->x_values_increment = (range + GRAPH_PAYMENT_RATE_STEPS - 1) / GRAPH_PAYMENT_RATE_STEPS;
+		this->auto_distance_dirty = false;
+	}
+
+	static uint GetDefaultSpeed()
+	{
+		uint fastest = 0;
+		CompanyID company = Company::IsValidID(_local_company) ? _local_company : OWNER_DEITY;
+		for (const Engine *engine : Engine::IterateType(VehicleType::Train)) {
+			if (engine->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) continue;
+			if (!IsEngineBuildable(engine->index, VehicleType::Train, company)) continue;
+			fastest = std::max(fastest, engine->GetDisplayMaxSpeed());
+		}
+		return fastest > 0 ? fastest : DEFAULT_SPEED;
+	}
 
 	PaymentRatesGraphWindow(WindowDesc &desc, WindowNumber window_number) : BaseCargoGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
@@ -1399,10 +1472,82 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 		this->draw_dates = false;
 
 		this->x_values_reversed = false;
-		/* The x-axis is labeled in either seconds or days. A day is two seconds, so we adjust the label if needed. */
-		this->x_values_increment = (TimerGameEconomy::UsingWallclockUnits() ? PAYMENT_GRAPH_X_STEP_SECONDS : PAYMENT_GRAPH_X_STEP_DAYS);
+		this->x_values_increment = DISTANCE_STEP;
+		this->speed = GetDefaultSpeed();
 
-		this->InitializeWindow(window_number, STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS, STR_GRAPH_CARGO_PAYMENT_RATES_DAYS);
+		this->InitializeWindow(window_number, STR_GRAPH_CARGO_PAYMENT_DISTANCE, STR_GRAPH_CARGO_PAYMENT_DISTANCE);
+		this->ReInit();
+	}
+
+	void DrawWidget(const Rect &r, WidgetID widget) const override
+	{
+		switch (widget) {
+			case WID_GRAPH_HEADER:
+				DrawString(r, GetString(STR_GRAPH_CARGO_PAYMENT_DISTANCE_TITLE, PackVelocity(this->speed, VehicleType::Train)), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle}, false, FontSize::Small);
+				break;
+
+			case WID_GRAPH_PAYMENT_SPEED:
+				DrawString(r.Shrink(WidgetDimensions::scaled.framerect), GetString(STR_PURCHASE_INFO_SPEED, PackVelocity(this->speed, VehicleType::Train)), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle}, false, FontSize::Small);
+				break;
+
+			case WID_GRAPH_PAYMENT_DISTANCE:
+				DrawString(r.Shrink(WidgetDimensions::scaled.framerect), GetString(this->auto_distance ? STR_GRAPH_CARGO_PAYMENT_AUTO_RANGE : STR_PURCHASE_INFO_AIRCRAFT_RANGE, this->x_values_increment * this->num_on_x_axis), TextColour::Black, {AlignmentH::Centre, AlignmentV::Middle}, false, FontSize::Small);
+				break;
+
+			default:
+				this->BaseCargoGraphWindow::DrawWidget(r, widget);
+				break;
+		}
+	}
+
+	void OnClick(Point pt, WidgetID widget, int click_count) override
+	{
+		if (widget == WID_GRAPH_PAYMENT_SPEED) {
+			this->editing_distance = false;
+			ShowQueryString(GetString(STR_JUST_INT, ConvertKmhishSpeedToDisplaySpeed(this->speed, VehicleType::Train)), STR_CONFIG_SETTING_QUERY_CAPTION, 6, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
+			return;
+		}
+		if (widget == WID_GRAPH_PAYMENT_DISTANCE) {
+			this->editing_distance = true;
+			ShowQueryString(GetString(STR_JUST_INT, this->x_values_increment * this->num_on_x_axis), STR_CONFIG_SETTING_QUERY_CAPTION, 6, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
+			return;
+		}
+		this->BaseCargoGraphWindow::OnClick(pt, widget, click_count);
+		if (this->auto_distance && (widget == WID_GRAPH_ENABLE_CARGOES || widget == WID_GRAPH_DISABLE_CARGOES || widget == WID_GRAPH_MATRIX)) {
+			this->auto_distance_dirty = true;
+			this->UpdatePaymentRates();
+			this->ReInit();
+		}
+	}
+
+	void OnQueryTextFinished(std::optional<std::string> str) override
+	{
+		if (!str.has_value()) return;
+		uint64_t value = ParseInteger<uint64_t>(*str, 10, true).value_or(0);
+		if (this->editing_distance) {
+			if (value == 0) {
+				this->auto_distance = true;
+				this->auto_distance_dirty = true;
+				this->UpdatePaymentRates();
+				this->ReInit();
+				return;
+			}
+			uint step = (std::min<uint64_t>(value, MAX_DISTANCE) + GRAPH_PAYMENT_RATE_STEPS - 1) / GRAPH_PAYMENT_RATE_STEPS;
+			if (!this->auto_distance && step == static_cast<uint>(this->x_values_increment)) return;
+			this->auto_distance = false;
+			this->x_values_increment = step;
+			this->UpdatePaymentRates();
+			this->ReInit();
+			return;
+		}
+		uint64_t display_speed = value;
+		if (display_speed == 0) return;
+		uint new_speed = ClampTo<uint16_t>(ConvertDisplaySpeedToKmhishSpeed(ClampTo<uint16_t>(display_speed), VehicleType::Train));
+		if (new_speed == 0 || new_speed == this->speed) return;
+		this->speed = new_speed;
+		this->auto_distance_dirty = true;
+		this->UpdatePaymentRates();
+		if (this->auto_distance) this->ReInit(); else this->SetDirty();
 	}
 
 	CargoTypes GetCargoTypes(WindowNumber) const override
@@ -1423,6 +1568,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
+		this->auto_distance_dirty = true;
 		this->UpdatePaymentRates();
 	}
 
@@ -1439,6 +1585,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 	void UpdatePaymentRates()
 	{
 		this->excluded_data = this->GetExcludedCargoTypes().base();
+		if (this->auto_distance && this->auto_distance_dirty) this->UpdateAutoDistance();
 
 		this->data.clear();
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
@@ -1447,7 +1594,8 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 			dataset.exclude_bit = cs->Index();
 
 			for (uint j = 0; j != this->num_on_x_axis; j++) {
-				dataset.values[j] = GetTransportedGoodsIncome(10, 20, j * 4 + 4, cs->Index());
+				uint distance = (j + 1) * this->x_values_increment;
+				dataset.values[j] = this->GetPayment(cs, distance);
 			}
 		}
 	}
@@ -1462,11 +1610,13 @@ static constexpr std::initializer_list<NWidgetPart> _nested_cargo_payment_rates_
 		NWidget(WWT_STICKYBOX, Colours::Brown),
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::Brown, WID_GRAPH_BACKGROUND), SetMinimalSize(568, 128),
-		NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_HEADER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetStringTip(STR_GRAPH_CARGO_PAYMENT_RATES_TITLE), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}),
+		NWidget(WWT_EMPTY, Colours::Invalid, WID_GRAPH_HEADER), SetMinimalSize(0, 16), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_EMPTY, Colours::Invalid, WID_GRAPH_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
-				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1),
+				NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_GRAPH_PAYMENT_SPEED), SetMinimalSize(120, 16), SetFill(1, 0), SetStringTip(STR_NULL),
+				NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_GRAPH_PAYMENT_DISTANCE), SetMinimalSize(120, 16), SetFill(1, 0), SetStringTip(STR_NULL, STR_GRAPH_CARGO_PAYMENT_RANGE_TOOLTIP),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
 				NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_GRAPH_ENABLE_CARGOES), SetStringTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
 				NWidget(WWT_PUSHTXTBTN, Colours::Brown, WID_GRAPH_DISABLE_CARGOES), SetStringTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4),

@@ -159,6 +159,7 @@ STR_ABBREV_TOFFEE                                               :TF
 STR_ABBREV_BATTERIES                                            :BA
 STR_ABBREV_PLASTIC                                              :PL
 STR_ABBREV_FIZZY_DRINKS                                         :FZ
+STR_ABBREV_NONE                                                 :NO
 STR_ABBREV_ALL                                                  :ALL
 
 # 'Mode' of transport for cargoes
@@ -279,6 +280,8 @@ STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Select g
 STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Select sorting order (descending/ascending)
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Select sorting criteria
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Select filtering criteria
+STR_BUTTON_RENAME                                               :{BLACK}Rename
+STR_BUTTON_LOCATION                                             :{BLACK}Location
 STR_BUTTON_SORT_BY                                              :{BLACK}Sort by
 STR_BUTTON_CATCHMENT                                            :{BLACK}Coverage
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Toggle coverage area display
@@ -638,6 +641,10 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Cargo Pa
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Days in transit
 STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}Seconds in transit
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Payment for delivering 10 units (or 10,000 litres) of cargo a distance of 20 squares
+STR_GRAPH_CARGO_PAYMENT_DISTANCE_TITLE                          :{TINY_FONT}{BLACK}Payment for delivering 10 units (or 10,000 litres) of cargo at a constant {VELOCITY}
+STR_GRAPH_CARGO_PAYMENT_DISTANCE                                :{TINY_FONT}{BLACK}Distance (tiles)
+STR_GRAPH_CARGO_PAYMENT_AUTO_RANGE                              :{TINY_FONT}{BLACK}Auto: {COMMA} tiles
+STR_GRAPH_CARGO_PAYMENT_RANGE_TOOLTIP                           :{BLACK}Set the maximum distance shown on this graph (enter 0 for automatic scaling)
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}All
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}None
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Display all cargoes on the graph
@@ -1822,6 +1829,9 @@ STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_MOST_USED             :Most used
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Show path reservations for tracks: {STRING2}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Give reserved tracks a different colour to assist in problems with trains refusing to enter path-based blocks
 
+STR_CONFIG_SETTING_STATION_GUI_SHOW_CARGO_CONTROLS             :Show grouping and sorting controls in station windows: {STRING2}
+STR_CONFIG_SETTING_STATION_GUI_SHOW_CARGO_CONTROLS_HELPTEXT    :Show the Group by and Sort by rows in station windows. Hiding these controls keeps the selected cargo grouping and sorting
+
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Keep building tools active after usage: {STRING2}
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Keep the building tools for bridges, tunnels, etc. open after use
 
@@ -2020,6 +2030,8 @@ STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :Select which si
 STR_CONFIG_SETTING_CYCLE_SIGNAL_GROUP                           :Current group only
 STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :All visible
 
+STR_CONFIG_SETTING_HIDE_SEMAPHORES                               :Hide semaphore signals: {STRING}
+STR_CONFIG_SETTING_HIDE_SEMAPHORES_HELPTEXT                       :Hide semaphore variants in the signal picker and use electric signals for new placement regardless of year. Existing signals are unaffected. All six signal types remain available.
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE                              :Show signal types: {STRING2}
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE_HELPTEXT                     :Choose which signal types are shown in the signal toolbar
 ###length 2
@@ -2270,6 +2282,12 @@ STR_INTRO_GAME_OPTIONS                                          :{BLACK}Game Opt
 STR_INTRO_HIGHSCORE                                             :{BLACK}Highscore Table
 STR_INTRO_HELP                                                  :{BLACK}Help & Manuals
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Online Content
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Settings
+STR_INTRO_AI_SETTINGS                                           :{BLACK}AI Settings
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Game Script Settings
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Open NewGRF settings
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Open AI settings
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Open Game script settings
 STR_INTRO_QUIT                                                  :{BLACK}Exit
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Start a new game. Ctrl+Click skips map configuration
@@ -3159,6 +3177,9 @@ STR_FOUND_TOWN_SELECT_LAYOUT_3X3_GRID                           :{BLACK}3x3 grid
 STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{BLACK}Random
 
 # Fund new industry window
+STR_FUND_INDUSTRY_PREVIEW_UNAVAILABLE                           :{BLACK}Preview unavailable for custom industry graphics
+STR_FUND_INDUSTRY_LAYOUT                                        :{BLACK}Layout {NUM} of {NUM}
+STR_FUND_INDUSTRY_COLOUR                                        :{BLACK}Colour: {STRING}
 STR_FUND_INDUSTRY_CAPTION                                       :{WHITE}Industry Funding
 STR_FUND_INDUSTRY_SELECTION_TOOLTIP                             :{BLACK}Choose the appropriate industry from this list
 STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :{BLACK}Create random industries
@@ -5653,10 +5674,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Sugar Mine
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Unnamed
-STR_SV_TRAIN_NAME                                               :Train #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Road Vehicle #{COMMA}
-STR_SV_SHIP_NAME                                                :Ship #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Aircraft #{COMMA}
+STR_SV_TRAIN_NAME                                               :Train {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Road Vehicle {COMMA}
+STR_SV_SHIP_NAME                                                :Ship {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Aircraft {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING1}
@@ -5965,7 +5986,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Company {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Group {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 
 ###length 2

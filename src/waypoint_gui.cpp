@@ -197,9 +197,7 @@ public:
 static constexpr std::initializer_list<NWidgetPart> _nested_waypoint_view_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
-		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_W_RENAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_BUOY_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_CAPTION, Colours::Grey, WID_W_CAPTION),
-		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_W_CENTER_VIEW), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_BUOY_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_SHADEBOX, Colours::Grey),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
 		NWidget(WWT_STICKYBOX, Colours::Grey),
@@ -210,6 +208,8 @@ static constexpr std::initializer_list<NWidgetPart> _nested_waypoint_view_widget
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_W_CENTER_VIEW), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_LOCATION, STR_BUOY_VIEW_CENTER_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_W_RENAME), SetMinimalSize(45, 12), SetFill(1, 1), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_BUOY_VIEW_RENAME_TOOLTIP),
 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_W_CATCHMENT), SetMinimalSize(50, 12), SetResize(1, 0), SetFill(1, 1), SetStringTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
 		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_W_SHOW_VEHICLES), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetStringTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, Colours::Grey),

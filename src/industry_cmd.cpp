@@ -2062,9 +2062,10 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
  * @param first_layout first layout to try
  * @param fund false = prospect, true = fund (only valid if current company is DEITY)
  * @param seed seed to use for desyncfree randomisations
+ * @param colour Original industry colour (0..15), also enforcing the exact layout; 16 retains random construction.
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildIndustry(DoCommandFlags flags, TileIndex tile, IndustryType it, uint32_t first_layout, bool fund, uint32_t seed)
+CommandCost CmdBuildIndustry(DoCommandFlags flags, TileIndex tile, IndustryType it, uint32_t first_layout, bool fund, uint32_t seed, uint8_t colour)
 {
 	if (it >= NUM_INDUSTRYTYPES) return CMD_ERROR;
 
@@ -2082,6 +2083,11 @@ CommandCost CmdBuildIndustry(DoCommandFlags flags, TileIndex tile, IndustryType 
 	if (_game_mode != GameMode::Editor && GetIndustryProbabilityCallback(it, _current_company == OWNER_DEITY ? IndustryAvailabilityCallType::RandomCreation : IndustryAvailabilityCallType::UserCreation, 1) == 0) {
 		return CMD_ERROR;
 	}
+
+	/* A selected colour also requests exact layout placement for original industries. */
+	if (colour > 16) return CMD_ERROR;
+	if (colour < 16 && (first_layout >= indspec->layouts.size() || !IndustryLayoutUsesOriginalGraphics(indspec->layouts[first_layout]))) return CMD_ERROR;
+	const bool exact_layout = colour < 16;
 
 	Randomizer randomizer;
 	randomizer.SetSeed(seed);
@@ -2131,8 +2137,8 @@ CommandCost CmdBuildIndustry(DoCommandFlags flags, TileIndex tile, IndustryType 
 		if (layout >= num_layouts) return CMD_ERROR;
 
 		/* Check subsequently each layout, starting with the given layout in p1 */
-		for (size_t i = 0; i < num_layouts; i++) {
-			layout = (layout + 1) % num_layouts;
+		for (size_t i = 0; i < (exact_layout ? 1 : num_layouts); i++) {
+			if (!exact_layout) layout = (layout + 1) % num_layouts;
 			ret = CreateNewIndustryHelper(tile, it, flags, indspec, layout, random_var8f, random_initial_bits, _current_company, _current_company == OWNER_DEITY ? IndustryAvailabilityCallType::RandomCreation : IndustryAvailabilityCallType::UserCreation, &ind);
 			if (ret.Succeeded()) break;
 		}
@@ -2140,6 +2146,8 @@ CommandCost CmdBuildIndustry(DoCommandFlags flags, TileIndex tile, IndustryType 
 		/* If it still failed, there's no suitable layout to build here, return the error */
 		if (ret.Failed()) return ret;
 	}
+
+	if (flags.Test(DoCommandFlag::Execute) && ind != nullptr && exact_layout) ind->random_colour = static_cast<Colours>(colour);
 
 	if (flags.Test(DoCommandFlag::Execute) && ind != nullptr && _game_mode != GameMode::Editor) {
 		AdvertiseIndustryOpening(ind);

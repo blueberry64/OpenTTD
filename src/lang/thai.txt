@@ -4672,10 +4672,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :เหมือ
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :ไม่มีชื่อ
-STR_SV_TRAIN_NAME                                               :รถไฟ #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :ยานพาหนะทางบก #{COMMA}
-STR_SV_SHIP_NAME                                                :พาหนะทางน้ำ #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :อากาศยาน #{COMMA}
+STR_SV_TRAIN_NAME                                               :รถไฟ {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :ยานพาหนะทางบก {COMMA}
+STR_SV_SHIP_NAME                                                :พาหนะทางน้ำ {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :อากาศยาน {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}

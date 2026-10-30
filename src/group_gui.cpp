@@ -753,8 +753,7 @@ public:
 				return;
 
 			case WID_GL_FILTER_BY_CARGO: { // Select filtering criteria dropdown menu
-				static std::string cargo_filter;
-				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0, DropDownOption::Filterable, &cargo_filter);
+				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0);
 				break;
 			}
 

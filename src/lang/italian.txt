@@ -5507,10 +5507,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=f}Miniera di
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Senza nome
-STR_SV_TRAIN_NAME                                               :Treno #{COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Automezzo #{COMMA}
-STR_SV_SHIP_NAME                                                :Nave #{COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Aeromobile #{COMMA}
+STR_SV_TRAIN_NAME                                               :Treno {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Automezzo {COMMA}
+STR_SV_SHIP_NAME                                                :Nave {COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Aeromobile {COMMA}
 
 ###length 27
 STR_SV_STNAME                                                   :{STRING}
@@ -5819,7 +5819,7 @@ STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:ZERO
 
 STR_FORMAT_COMPANY_NUM                                          :(Compagnia {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Gruppo {COMMA}
-STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} di {0:TOWN}
 
 ###length 2
